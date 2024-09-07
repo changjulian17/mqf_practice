@@ -2,14 +2,12 @@
 
 Aspiring Quant!
 
-.
-├── A_Primer
-│   ├── A\ Primer\ for\ the\ Mathematics\ of\ Financial\ Engineering\ -\ Chapter\ 2.ipynb
-│   └── A\ primer\ -\ Chapter\ 8.ipynb
-├── QF600_Asset_Pricing
-│   └── Homework_1
-│       ├── Industry_Portfolios.xlsx
-│       └── efficient_frontier.ipynb
-└── README.md
-
+## Year 1 Term 1
+### QF600
+#### Homework 1
+Efficient Frontier
+Tangency Portfolio
+- CAL
+- Sharpe
+### QF620
 
