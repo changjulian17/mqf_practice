@@ -5,6 +5,7 @@ Aspiring Quant!
 ## Year 1 Term 1
 ### QF600
 #### Homework 1
+> QF600_Asset_Pricing/Homework_1/efficient_frontier_notebook.ipynb
 - Efficient Frontier
 - Tangency Portfolio
     - CAL

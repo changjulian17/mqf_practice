@@ -11,6 +11,9 @@ class PortfolioAnalysis:
         Args:
             file_name (str): The path to the Excel file containing industry portfolios data.
             risk_free_rate (float): The monthly risk-free rate. Default is 0.13% per month.
+
+        Assumptions: 
+            Volatility and Returns are monthly
         """
         warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
         self.df = pd.read_excel(file_name, index_col='Date')
