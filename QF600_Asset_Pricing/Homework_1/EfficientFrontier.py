@@ -33,10 +33,10 @@ class PortfolioAnalysis:
         self.zeta = self.R.T @ np.linalg.inv(self.V) @ self.R
         self.delta = self.e.T @ np.linalg.inv(self.V) @ self.e
         self.R_mv = self.alpha / self.delta
-        print(f"alpha:\t{self.alpha:.3f}")
-        print(f"zeta:\t{self.zeta:.3f}")
-        print(f"delta:\t{self.delta:.3f}")
-        print(f"R_mv:\t{self.R_mv:.3f}")
+        print(f"alpha:\t{self.alpha:.5f}")
+        print(f"zeta:\t{self.zeta:.5f}")
+        print(f"delta:\t{self.delta:.5f}")
+        print(f"R_mv:\t{self.R_mv:.5f}")
     
     def plot_minimum_variance_frontier(self) -> None:
         """Plots the minimum-variance frontier."""
@@ -45,9 +45,9 @@ class PortfolioAnalysis:
         self.sig_p = (1/self.delta + self.delta / (self.zeta * self.delta - self.alpha**2) * (self.R_p - self.R_mv)**2)**0.5
         
         plt.plot(self.sig_p, self.R_p, label="Minimum Variance Frontier")
-        plt.xlabel("Volatility (Standard Deviation)")
+        plt.xlabel("Monthly Volatility (Standard Deviation in %)")
         plt.xticks(np.arange(2.5, 5, 0.25))
-        plt.ylabel("Expected Return")
+        plt.ylabel("Monthly Expected Return (%)")
         plt.title("R_p vs. sig_p")
         plt.grid(True)
         plt.legend()
@@ -59,9 +59,9 @@ class PortfolioAnalysis:
         R_p_mvf = self.R_f + (self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 * sig_p_mvf
         
         plt.plot(self.sig_p, self.R_p, label="Minimum Variance Frontier")
-        plt.xlabel("Volatility (Standard Deviation)")
+        plt.xlabel("Monthly Volatility (Standard Deviation in %)")
         plt.xticks(np.arange(0, 5, 0.5))
-        plt.ylabel("Expected Return")
+        plt.ylabel("Monthly Expected Return (%)")
         plt.title("R_p vs. sig_p")
         plt.plot(sig_p_mvf, R_p_mvf, label="Efficient Frontier with Risk-Free Asset")
         plt.scatter(0, self.R_f, color='red', zorder=5, label="Risk-Free Rate")
@@ -74,12 +74,12 @@ class PortfolioAnalysis:
         self.R_tg = (self.alpha * self.R_f - self.zeta) / (self.delta * self.R_f - self.alpha)
         self.sig_tg = -(self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 / (self.delta * (self.R_f - self.R_mv))
         sharpe_ratio = (self.R_tg - self.R_f) / self.sig_tg
-        print(f"R_tg:\t{self.R_tg}")
-        print(f"sig_tg:\t{self.sig_tg}")
-        print(f"Sharpe Ratio:\t{sharpe_ratio}")
+        print(f"R_tg:\t{self.R_tg:3f}% per month")
+        print(f"sig_tg:\t{self.sig_tg:3f}% per month")
+        print(f"Sharpe Ratio:\t{sharpe_ratio:3f}")
 
     def compute_tangency_portfolio_weights(self) -> pd.DataFrame:
         """Calculates the weights of the tangency portfolio."""
         w_star = (self.delta * self.R_tg - self.alpha) / (self.zeta * self.delta - self.alpha**2) * np.linalg.inv(self.V) @ self.R \
                  + (self.zeta - self.alpha * self.R_tg) / (self.zeta * self.delta - self.alpha**2) * np.linalg.inv(self.V) @ self.e
-        return pd.DataFrame(w_star, index=self.df.columns, columns=['Weights'])
+        return pd.DataFrame(w_star, index=self.df.columns, columns=['Weights']).round(3)

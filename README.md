@@ -15,5 +15,8 @@ Interestingly enough I did a stochastic version of this in 2021, while I was stu
 
 In this exercise I found that the theoretical minimum variance portfolio, tangential portfolio can be calculated. I also placed the code in a neat class to make the notebook more readable. Also included the formulas I used. Bold for vectors and matrices.
 ### QF620
-
+#### Assignment 1
+> QF620_Stochastic Modelling_in_Finance/Assignment_1/assignment_1_notebook.ipynb
+- Risk Neutral Asset pricing, Binomial tree, Cox-Ross-Rubinstein formulation
+- Brownian motion, Weiner Process
  
