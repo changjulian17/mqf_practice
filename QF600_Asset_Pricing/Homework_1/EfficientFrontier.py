@@ -43,7 +43,7 @@ class PortfolioAnalysis:
         self.compute_minimum_variance()
         self.R_p = np.arange(0, 2, 0.001)
         self.sig_p = (1/self.delta + self.delta / (self.zeta * self.delta - self.alpha**2) * (self.R_p - self.R_mv)**2)**0.5
-        
+
         plt.plot(self.sig_p, self.R_p, label="Minimum Variance Frontier")
         plt.xlabel("Monthly Volatility (Standard Deviation in %)")
         plt.xticks(np.arange(2.5, 5, 0.25))
@@ -55,15 +55,21 @@ class PortfolioAnalysis:
 
     def plot_efficient_frontier_with_risk_free(self) -> None:
         """Plots the efficient frontier with the risk-free asset."""
-        sig_p_mvf = np.arange(0, 4.5, 0.001)
-        R_p_mvf = self.R_f + (self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 * sig_p_mvf
+        sig_p_eff = np.arange(0, 4.8, 0.001)
+        R_p_eff = self.R_f + (self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 * sig_p_eff
+        sig_p_eff_ref = np.arange(0, .5, 0.001)
+        R_p_eff_ref = self.R_f - (self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 * sig_p_eff_ref
         
+                
+        print(f"{R_p_eff[1]} {sig_p_eff[1]}")
+
         plt.plot(self.sig_p, self.R_p, label="Minimum Variance Frontier")
         plt.xlabel("Monthly Volatility (Standard Deviation in %)")
-        plt.xticks(np.arange(0, 5, 0.5))
+        plt.xticks(np.arange(0, 5.5, 0.5))
         plt.ylabel("Monthly Expected Return (%)")
         plt.title("R_p vs. sig_p")
-        plt.plot(sig_p_mvf, R_p_mvf, label="Efficient Frontier with Risk-Free Asset")
+        plt.plot(sig_p_eff, R_p_eff, label="Efficient Frontier with Risk-Free Asset", color='orange')
+        plt.plot(sig_p_eff_ref, R_p_eff_ref, color='orange', linestyle='--')
         plt.scatter(0, self.R_f, color='red', zorder=5, label="Risk-Free Rate")
         plt.grid(True)
         plt.legend()
