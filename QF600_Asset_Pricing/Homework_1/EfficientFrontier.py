@@ -59,9 +59,6 @@ class PortfolioAnalysis:
         R_p_eff = self.R_f + (self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 * sig_p_eff
         sig_p_eff_ref = np.arange(0, .5, 0.001)
         R_p_eff_ref = self.R_f - (self.zeta - 2 * self.alpha * self.R_f + self.delta * self.R_f**2)**0.5 * sig_p_eff_ref
-        
-                
-        print(f"{R_p_eff[1]} {sig_p_eff[1]}")
 
         plt.plot(self.sig_p, self.R_p, label="Minimum Variance Frontier")
         plt.xlabel("Monthly Volatility (Standard Deviation in %)")
