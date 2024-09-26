@@ -14608,9 +14608,8 @@ $$ \mathbb{E}[e^{2X}] = M_{X}(2) = exp\left( 2 \mu + 2 \sigma^2 \right) $$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="2(a)">2(a)<a class="anchor-link" href="#2(a)">&#182;</a></h3><p>Since $ W_t \sim N(0, t)$, use MGF to find $ \mathbb{E}[e^{W_t}]$, \
-$$ \mathbb{E}[e^{\theta W_t}] = M_{W_t}(\theta) $$</p>
-$$ \mathbb{E}[e^{W_t}] = M_{W_t}(1) = exp\left( \mu \theta + \frac{1}{2}\sigma^2 \theta^2 \right) = exp\left( \frac{1}{2}t^2 \right)$$<h3 id="2(b)">2(b)<a class="anchor-link" href="#2(b)">&#182;</a></h3>$$ \mathbb{E}[e^{\sigma W_t}] = M_{W_t}(\sigma) = exp\left( \mu \theta + \frac{1}{2}\sigma^2 \theta^2 \right) = exp\left(\frac{1}{2}\sigma^4 \right)$$<hr>
+<h3 id="2(a)">2(a)<a class="anchor-link" href="#2(a)">&#182;</a></h3><p>Since $ W_t \sim N(0, t)$, use MGF to find $ \mathbb{E}[e^{W_t}]$,</p>
+$$ \mathbb{E}[e^{\theta W_t}] = M_{W_t}(\theta) $$$$ \mathbb{E}[e^{W_t}] = M_{W_t}(1) = exp\left( \mu \theta + \frac{1}{2}\sigma^2 \theta^2 \right) = exp\left( \frac{1}{2}t \right)$$<h3 id="2(b)">2(b)<a class="anchor-link" href="#2(b)">&#182;</a></h3>$$ \mathbb{E}[e^{\sigma W_t}] = M_{W_t}(\sigma) = exp\left( \mu \theta + \frac{1}{2}\sigma^2 \theta^2 \right) = exp\left(\frac{1}{2}\sigma^2 t \right)$$<hr>
 
 </div>
 </div>
@@ -14628,7 +14627,7 @@ $p^*$ = 36% and $q^*$ = 64%</p>
 <p>Calculate the exercise prices at maturity ($t=2$)</p>
 <p>Calculate the expected price with exercise prices at $t=2$ for the option using risk neutral probabilities for $t=1$ then $t=0$
 $$ V_E^n = \frac{1}{1 + r} \mathbb{E}_n^*[V_{n+1}] = \frac{1}{1 + r} \left( p^* \times V_{n+1}^{u} + q^* \times V_{n+1}^{d} \right) $$</p>
-$$ V_A^n = max\left\{\frac{1}{1 + r} \mathbb{E}_n^*[V_{n+1}] = \frac{1}{1 + r} \left( p^* \times V_{n+1}^{u} + q^* \times V_{n+1}^{d} \right) , (K-S_n)^{+} \right\} $$<p><img src="Question3.png" alt=""></p>
+<h4 id="For-Put">For Put<a class="anchor-link" href="#For-Put">&#182;</a></h4>$$ V_A^n = max\left\{\frac{1}{1 + r} \mathbb{E}_n^*[V_{n+1}] = \frac{1}{1 + r} \left( p^* \times V_{n+1}^{u} + q^* \times V_{n+1}^{d} \right) , (K-S_n)^{+} \right\} $$<h4 id="For-Call">For Call<a class="anchor-link" href="#For-Call">&#182;</a></h4>$$ V_A^n = max\left\{\frac{1}{1 + r} \mathbb{E}_n^*[V_{n+1}] = \frac{1}{1 + r} \left( p^* \times V_{n+1}^{u} + q^* \times V_{n+1}^{d} \right) , (S_n-K)^{+} \right\} $$<p><img src="Question3.png" alt=""></p>
 <p>(a) $5.44
 (b) $5.68
 (c) $1.20
@@ -14656,7 +14655,7 @@ P(W_2&lt;0 | W_1&gt;0) &amp;= P(W_2&lt;W_1 \cap \left[|W_2-W_1|&gt;|W_1-W_0|\rig
 \end{align}
 $$</p>
 <p>Since $W_1 - W_0$ and $W_2-W_1$ are independent</p>
-<h3 id="4(b)">4(b)<a class="anchor-link" href="#4(b)">&#182;</a></h3><p>$ P(W_1 \times W_2 &lt;0) $ is when $W_1$ and $W_2$ have opposite signs and there is 50% probability that either is more or less than 0. \</p>
+<h3 id="4(b)">4(b)<a class="anchor-link" href="#4(b)">&#182;</a></h3><p>$ P(W_1 \times W_2 &lt;0) $ is when $W_1$ and $W_2$ have opposite signs and there is 50% probability that either is more or less than 0.</p>
 $$ 
 \begin{align}
 P(W_1 \times W_2 &lt;0) &amp;= P(W_2&lt;0 | W_1&gt;0)\times P(W_1 &gt;0) + P(W_2&gt;0 | W_1&lt;0)\times P(W_1 &lt;0)  \notag\\
@@ -14669,7 +14668,7 @@ P(W_1 &lt; 0 \cap W_2 &lt; 0) &amp;= P(W_2&lt;0 | W_1&lt;0) \times P(W_1&lt;0) \
                         &amp;= P(W_2&lt;W_1| W_1&lt;0) \times P(W_1&lt;0) \notag\\
                         &amp;+ P(W_2&gt;W_1 \cap |W_2-W_1|&lt;|W_1-W_0|\,\,| W_1&lt;0) \times P(W_1&lt;0)   \notag\\
                         &amp;= \frac{1}{2} \times \frac{1}{2} + \frac{1}{2} \times \frac{1}{2} \times \frac{1}{2} \notag \\
-                        &amp;= \frac{3}{8}
+                        &amp;= \frac{3}{8} \notag
 \end{align}
 $$<hr>
 
@@ -14699,27 +14698,39 @@ $$ Var[(W_t-W_s)] = E[(W_t-W_s)^2] - E[(W_t-W_s)]^2 = E[(W_t-W_s)^2] $$
 $$ \begin{equation} E[(W_t-W_s)^2] = t-s \tag{1} \end{equation}$$ 
 \
 Next finding $ \mathbb{E}[((W_t-W_s)^2)^2] = \mathbb{E}[(W_t-W_s)^4] $,
-Use MGF, 
-$$ M_{W_t-W_s}(\theta) = exp\left(\mu \theta + \frac{1}{2}\sigma^2\theta^2\right) = \exp\left(\frac{1}{2}\sigma^2\theta^2\right) $$
-Compute derivatives up to 4th moment,
-$ \frac {dM_{W_t-W_s}(\theta)}{d\theta} = \mathbb{E}[W_t-W_s] = 
-\sigma\theta \exp\left(\frac{1}{2}\sigma^2\theta^2\right)$</p>
-<p>$ \frac {d^2M_{W_t-W_s}(\theta)}{d\theta^2} = \mathbb{E}[(W_t-W_s)^2] = 
+Use MGF,</p>
+$$ M_{W_t-W_s}(\theta) = exp\left(\mu \theta + \frac{1}{2}\sigma^2\theta^2\right) = \exp\left(\frac{1}{2}\sigma^2\theta^2\right) $$<p>Compute derivatives up to 4th moment,
+$$ 
+\begin{align}
+\frac {dM_{W_t-W_s}(\theta)}{d\theta} = \mathbb{E}[W_t-W_s] = 
+\sigma\theta \exp\left(\frac{1}{2}\sigma^2\theta^2\right) \notag \\
+\end{align}
+$$</p>
+$$ 
+\begin{align}
+\frac {d^2M_{W_t-W_s}(\theta)}{d\theta^2} = \mathbb{E}[(W_t-W_s)^2] = 
 \sigma^4\theta^4 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
-\sigma^2 \exp\left(\frac{1}{2}\sigma^2\theta^2\right)$</p>
-<p>$ \frac {d^3M_{W_t-W_s}(\theta)}{d\theta^3} = \mathbb{E}[(W_t-W_s)^3] = 
+\sigma^2 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) \notag 
+\end{align}
+$$$$ 
+\begin{align}
+
+\frac {d^3M_{W_t-W_s}(\theta)}{d\theta^3} = \mathbb{E}[(W_t-W_s)^3] &amp;= 
 \sigma^6\theta^3 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
 2\sigma^4\theta \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
-\sigma^4\theta \exp\left(\frac{1}{2}\sigma^2\theta^2\right)$</p>
-<p>$ \frac {d^4M_{W_t-W_s}(\theta)}{d\theta^4} = \mathbb{E}[(W_t-W_s)^4] = 
+\sigma^4\theta \exp\left(\frac{1}{2}\sigma^2\theta^2\right) \notag 
+\end{align}
+$$$$
+\begin{align}
+\frac {d^4M_{W_t-W_s}(\theta)}{d\theta^4} = \mathbb{E}[(W_t-W_s)^4] &amp;= 
 \sigma^8\theta^4 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
 3\sigma^6\theta^2 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
-2\sigma^6\theta^2 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
-2\sigma^4 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
+2\sigma^6\theta^2 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) \notag \\
+&amp;+ 2\sigma^4 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
 \sigma^6\theta^2 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) + 
-\sigma^4 \exp\left(\frac{1}{2}\sigma^2\theta^2\right)$\
-\
-and taking $\frac {d^4M_{W_t-W_s}(\theta)}{d\theta^4}$ when $\theta=0, \sigma^2 = t-s$,
+\sigma^4 \exp\left(\frac{1}{2}\sigma^2\theta^2\right) \notag 
+\end{align}
+$$<p>and taking $\frac {d^4M_{W_t-W_s}(\theta)}{d\theta^4}$ when $\theta=0, \sigma^2 = t-s$,
 $$ \begin{align} \mathbb{E}[(W_t-W_s)^4] = 3(t-s)^2 \tag{2}  \end{align} $$</p>
 <p>From (1) and (2),
 $$ Var((W_t-W_s)^2) = \mathbb{E}[(W_t-W_s)^4]-(\mathbb{E}[(W_t-W_s)^2])^2 = 3(t-s)^2 - (t-s)^2 = 2(t-s)^2$$</p>
@@ -14737,20 +14748,18 @@ $$ Var((W_t-W_s)^2) = \mathbb{E}[(W_t-W_s)^4]-(\mathbb{E}[(W_t-W_s)^2])^2 = 3(t-
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h3 id="6">6<a class="anchor-link" href="#6">&#182;</a></h3><p>Finding $ \mathbb{E}[|W_{t+\Delta t}-W_t|]$, given $W_t \sim N(0,t)$ and $ (W_{t+\Delta t}-W_t) \sim N(0, \Delta t)$. \
 Let $ (W_{t+\Delta t}-W_t) $ be X, such that $ X \sim N(0, \Delta t)$.</p>
-<p>Function for p.d.f. is $f(x) = \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(x - \mu)^2}{2\sigma^2}} $ and  $ \mathbb{E}[X] = \int_{-\infty}^{\infty} xf(x) = \int_{-\infty}^{\infty} x\frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(x - \mu)^2}{2\sigma^2}} $ \
- \
-$  
+<p>Function for p.d.f. is $f(x) = \frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(x - \mu)^2}{2\sigma^2}} $ and  $ \mathbb{E}[X] = \int_{-\infty}^{\infty} xf(x) dx = \int_{-\infty}^{\infty} x\frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(x - \mu)^2}{2\sigma^2}} dx $</p>
+$$
 \begin{align}
 \mathbb{E}[|W_{t+\Delta t}-W_t|] &amp;= \mathbb{E}[|X|] \notag  \\
                                &amp;= 2 \int_{0}^{\infty} X\frac{1}{\sqrt{2\pi} \sigma} e^{-\frac{(X - \mu)^2}{2\sigma^2}} dx \notag \\
-                               &amp;= 2 \int_{0}^{\infty} X\frac{1}{\sqrt{2\pi \Delta t}} e^{-\frac{X^2}{2\Delta t}} dx \\
-                               &amp;= -\sqrt{\frac{2 \Delta t}{\pi}} \int_{0}^{-\infty} e^{u} du \tag 2\\
+                               &amp;= 2 \int_{0}^{\infty} X\frac{1}{\sqrt{2\pi \Delta t}} e^{-\frac{X^2}{2\Delta t}} dx \tag 3\\
+                               &amp;= -\sqrt{\frac{2 \Delta t}{\pi}} \int_{0}^{-\infty} e^{u} du \tag 4\\
                                &amp;= -\sqrt{\frac{2 \Delta t}{\pi}} [0-1] \notag \\
                                &amp;= \sqrt{\frac{2 \Delta t}{\pi}} \notag
 \end{align}
-$
-(1) $\mu = 0$ and $\sigma^2 = {\Delta t}$ \
-(2) substitute $ u=- \frac{X^2}{2 \Delta t}; \quad\frac {du}{dx} = -\frac{X}{\Delta t}; \quad x{dx}=-{\Delta t}{du}$</p>
+$$<p>(3) $\mu = 0$ and $\sigma^2 = {\Delta t}$ \
+(4) substitute $ u=- \frac{X^2}{2 \Delta t}; \quad\frac {du}{dx} = -\frac{X}{\Delta t}; \quad x{dx}=-{\Delta t}{du}$</p>
 
 </div>
 </div>
