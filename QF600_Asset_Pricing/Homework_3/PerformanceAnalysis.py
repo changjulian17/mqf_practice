@@ -38,11 +38,11 @@ class FinancialMetrics:
         m_coefficients = m_model.coef_.flatten()
         m_intercept = m_model.intercept_
 
-        sharpe = np.mean(excess_returns, axis=0) / np.std(excess_returns, axis=0)
-        sortino = np.mean(excess_returns, axis=0) / np.sqrt(below_target_semi_variance)
-        treynor = self.df_industries.mean() / m_coefficients
+        sharpe        = np.mean(excess_returns, axis=0) / np.std(excess_returns, axis=0)
+        sortino       = np.mean(excess_returns, axis=0) / np.sqrt(below_target_semi_variance)
+        treynor       = np.mean(excess_returns,axis=0)/m_coefficients   
         jensens_alpha = m_intercept
-        ff_alpha = self.lfm_df['Intercept (Alpha_i)']
+        ff_alpha      = self.lfm_df['Intercept (Alpha_i)']
 
         self.performance_df = pd.DataFrame({
             'Sharpe Ratio': sharpe,
