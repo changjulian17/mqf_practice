@@ -5,12 +5,32 @@ from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 
 class FinancialMetrics:
+    """
+    A class to compute various financial performance metrics for industry portfolios
+    using Fama-French factors and plot them.
+    """
+
     def __init__(self, industry_file, risk_factors_file):
+        """
+        Initializes the FinancialMetrics class by loading the industry portfolios
+        and risk factors from Excel files.
+
+        Parameters:
+        industry_file (str): Path to the Excel file containing industry portfolios.
+        risk_factors_file (str): Path to the Excel file containing risk factors data.
+        """
         warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
         self.df_industries = pd.read_excel(industry_file, index_col='Date')
         self.df_risk_factors = pd.read_excel(risk_factors_file, index_col='Date')
 
     def perform_ff_regression(self):
+        """
+        Performs Fama-French three-factor model regression on industry portfolios.
+
+        Returns:
+        pd.DataFrame: A DataFrame containing the intercept (alpha) and the
+                      coefficients (betas) for market risk, size (SMB), and value (HML).
+        """
         excess_returns = self.df_industries.values - self.df_risk_factors['Rf'].values[:, np.newaxis]
         risk_factors = self.df_risk_factors[['Rm-Rf', 'SMB', 'HML']]
 
@@ -29,6 +49,13 @@ class FinancialMetrics:
         return self.lfm_df.round(4)
 
     def calculate_performance_metrics(self):
+        """
+        Calculates performance metrics including Sharpe Ratio, Sortino Ratio, 
+        Treynor Ratio, Jensen's Alpha, and Fama-French Alpha for each industry portfolio.
+
+        Returns:
+        pd.DataFrame: A DataFrame containing the computed performance metrics for each industry.
+        """
         excess_returns = self.df_industries.values - self.df_risk_factors['Rf'].values[:, np.newaxis]
         below_target_semi_variance = np.sum(np.where(excess_returns < 0, excess_returns, 0)**2, axis=0) / self.df_industries.count()
 
@@ -55,6 +82,14 @@ class FinancialMetrics:
         return self.performance_df.round(4)
 
     def plot_performance_metrics(self):
+        """
+        Plots bar charts of the computed performance metrics (Sharpe, Sortino, Treynor, Jensen's Alpha,
+        and Fama-French Alpha) for each industry.
+
+        This method assumes that `calculate_performance_metrics()` has already been called
+        to generate the `performance_df`.
+        """
+
         colors = ['skyblue', 'lightgreen', 'orange', 'pink', 'purple']
         fig, axes = plt.subplots(3, 2, figsize=(10, 10))
         axes = axes.ravel()
