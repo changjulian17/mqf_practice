@@ -133,27 +133,24 @@ $$
 $$
 $V_{Cash Digital}(0) = e^{-rT}\mathbb{E}[\mathbb{1}_{S_T>K}]$
 
-
-#### BS - Digital Cash-or-nothing Options
+### BS - Digital Cash-or-nothing Options
 $$
 x^{*BS} 
 = 
 \frac{\log
 \left(
 	\frac{K}{S_0}
-\right) - 
+\right) -
 \left(
 	r-\frac{\sigma^2}{2}
 \right)T
 }{\sigma \sqrt{T}}
+=
+d_2
 $$
 $$
-V_c^{BS} 
-= 
-e^{-rT} \Phi
-\left(
-	-x^{*BS}
-\right)
+V_{Cash Digital}(0)_c^{BS} = e^{-rT} \Phi(d_2) ; 
+\,\,\,V_{Cash Digital}(0)_p^{BS} = e^{-rT} \Phi(-d_2)
 $$
 
 ---
@@ -170,36 +167,27 @@ $$
 $$
 
 $V_{Asset Digital}(0) = e^{-rT}\mathbb{E}[S_T\mathbb{1}_{S_T>K}]$ 
-#### BS - Digital Asset-or-nothing Options
+
+### BS - Digital Asset-or-nothing Options
 $$
-\begin{align}
-
-
-V_c^{BS} 
-&= 
-e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}] 
-\\
-&= 
-\frac{e^{-rT}}{\sqrt{2\pi}} 
-\int_{x^*}^{\infty} 
-S_0 e^{(r - \frac{\sigma^2}{2} ) T + \sigma\sqrt{T}x-\frac{x^2}{2}} \, 
-dx 
-\\
-&= 
-\frac{ S_0e^{- \frac{\sigma^2 T}{2} } }
-	{\sqrt{2\pi}} 
-\int_{x^*}^{\infty} 
-e^{\sigma\sqrt{T}x-\frac{x^2}{2}} \, 
-dx 
-\\
-&=
-S_0 \Phi(-x^* + \sigma \sqrt{T}) 
-\\
-\\
-&=
+$V_{Asset Digital}(0)_c^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}] 
+= 
+	\frac{S_0e^{-\frac{\sigma^2T}{2}}}
+		{\sqrt{2\pi}} 
+	\int_{x^*}^{\infty} 
+		  e^{\sigma\sqrt{T}x-\frac{x^2}{2}} \, dx 
+=
 S_0 \Phi(d_1) 
-
-\end{align}
+$$
+$$
+$V_{Asset Digital}(0)_p^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T<K}] 
+= 
+	\frac{S_0e^{-\frac{\sigma^2T}{2}}}
+		{\sqrt{2\pi}} 
+	\int_{-\infty}^{x^*} 
+		  e^{\sigma\sqrt{T}x-\frac{x^2}{2}} \, dx 
+=
+S_0 \Phi(-d_1) 
 $$
 $$
 d_1 
