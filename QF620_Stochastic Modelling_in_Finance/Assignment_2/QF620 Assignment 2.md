@@ -1,3 +1,4 @@
+# QF620 Assignment 2
 *by Julian Chang*
 
 
@@ -5,16 +6,17 @@
 #### (a)
 $$
 \begin{align}
-Z_t = \log(S_t) = &f(S_t); \,\,\, f'(S_t) = \frac{1}{S_t}, \,\,\,f''(S_t) = -\frac{1}{S_t^2} \\
 
-dZ_t 
-&= 
-\left( 
-	r - \frac{\sigma^2}{2} 
-\right)dt + \sigma dW_t
+
+  f(S_t) = {S_t}^2; \,\,\, f'(S_t) = 2S_t, \,\,\,f''(S_t) = 2 \\
+
+\\
+
+d{S_t}^2 = (2r+\sigma^2) {S_t}^2 dt + 2 \sigma {S_t}^2 dW_t \\
 
 \end{align}
 $$
+
 #### (b)
 For $S_t$,
 $$
@@ -35,6 +37,25 @@ $$
 S_t &=  S_0 e^{\left( 
 	r - \frac{\sigma^2}{2} 
 \right)t + \sigma W_t}
+\\
+
+\end{align}
+$$
+
+For ${S_t}^2$, let $X_t = {S_t}^2$
+$$
+\begin{align}
+
+
+  f(X_t) = \log{S_t}; \,\,\, f'(S_t) &= \frac{1}{S_t}, \,\,\,f''(S_t) = -\frac{1}{X_t^2} \\
+
+\\
+
+d{X_t} &= (2r+\sigma^2) {X_t} dt + 2 \sigma {X_t} dW_t \\
+
+\int_{0}^{t} d(\log{X_u}) &=  (2r+\sigma^2) \int_{0}^{t} du + 2 \sigma  \int_{0}^{t} dW_u
+
+\\
 \\
 {S_t}^2 &=  {S_0}^2 e^{\left( 
 	2r - \sigma^2 
@@ -70,6 +91,7 @@ S_0 e^{
 \right]
 \\
 &=S_0e^{rt}
+
 
 \end{align}
 $$
@@ -170,7 +192,7 @@ $V_{Asset Digital}(0) = e^{-rT}\mathbb{E}[S_T\mathbb{1}_{S_T>K}]$
 
 ### BS - Digital Asset-or-nothing Options
 $$
-$V_{Asset Digital}(0)_c^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}] 
+V_{Asset Digital}(0)_c^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}] 
 = 
 	\frac{S_0e^{-\frac{\sigma^2T}{2}}}
 		{\sqrt{2\pi}} 
@@ -180,7 +202,7 @@ $V_{Asset Digital}(0)_c^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}]
 S_0 \Phi(d_1) 
 $$
 $$
-$V_{Asset Digital}(0)_p^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T<K}] 
+V_{Asset Digital}(0)_p^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T<K}] 
 = 
 	\frac{S_0e^{-\frac{\sigma^2T}{2}}}
 		{\sqrt{2\pi}} 
