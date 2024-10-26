@@ -1,11 +1,13 @@
 # QF620 Assignment 2
+
 *by Julian Chang*
 
+### 1.
 
-### 1. 
 #### (a)
+
 $$
-\begin{align}
+\begin{aligned}
 
 
   f(S_t) = {S_t}^2; \,\,\, f'(S_t) = 2S_t, \,\,\,f''(S_t) = 2 \\
@@ -14,13 +16,15 @@ $$
 
 d{S_t}^2 = (2r+\sigma^2) {S_t}^2 dt + 2 \sigma {S_t}^2 dW_t \\
 
-\end{align}
+\end{aligned}
 $$
 
 #### (b)
+
 For $S_t$,
+
 $$
-\begin{align}
+\begin{aligned}
 \\
 
 \int_{0}^{t} \,d(\log S_u) 
@@ -39,12 +43,13 @@ S_t &=  S_0 e^{\left(
 \right)t + \sigma W_t}
 \\
 
-\end{align}
+\end{aligned}
 $$
 
 For ${S_t}^2$, let $X_t = {S_t}^2$
+
 $$
-\begin{align}
+\begin{aligned}
 
 
   f(X_t) = \log{S_t}; \,\,\, f'(S_t) &= \frac{1}{S_t}, \,\,\,f''(S_t) = -\frac{1}{X_t^2} \\
@@ -62,11 +67,13 @@ d{X_t} &= (2r+\sigma^2) {X_t} dt + 2 \sigma {X_t} dW_t \\
 \right)t + 2\sigma W_t}
 \\
 
-\end{align}
+\end{aligned}
 $$
+
 #### (c)
+
 $$
-\begin{align}
+\begin{aligned}
 
 \mathbb{E}[S_t] 
 &= 
@@ -93,11 +100,13 @@ S_0 e^{
 &=S_0e^{rt}
 
 
-\end{align}
+\end{aligned}
 $$
+
 Using MGF for $\mathbb{E}[e^{\sigma W_t}] = e^{\frac{\sigma^2 t}{2}}$.
+
 $$
-\begin{align}
+\begin{aligned}
 
 \mathbb{E}[{S_t}^2] 
 &= 
@@ -124,22 +133,21 @@ S_0 e^{
 \\
 &=S_0e^{(2r+\sigma^2)t}
 
-\end{align}
+\end{aligned}
 $$
+
 Using MGF for $\mathbb{E}[e^{2 \sigma W_t}] = e^{2 \sigma^2 t}$.
-
-
-
-
 
 .
 
 ---
 
-### 2. 
+### 2.
+
 #### Valuing Digital cash-or-nothing options
 
-Let $x^*$ be $x$ where $S_T = K$. 
+Let $x^*$ be $x$ where $S_T = K$.
+
 $$
 \mathbb{E}[\mathbb{1}_{S_T>K}] 
 = 
@@ -151,11 +159,13 @@ $$
 	\int_{x^*}^{\infty} 
 		e^{-\frac{x^2}{2}} \, dx
 = 
-	\Phi\left(-x^*\right) 
+	\Phi\left(-x^*\right)
 $$
+
 $V_{Cash Digital}(0) = e^{-rT}\mathbb{E}[\mathbb{1}_{S_T>K}]$
 
 ### BS - Digital Cash-or-nothing Options
+
 $$
 x^{*BS} 
 = 
@@ -170,13 +180,16 @@ x^{*BS}
 =
 d_2
 $$
+
 $$
 V_{Cash Digital}(0)_c^{BS} = e^{-rT} \Phi(d_2) ; 
 \,\,\,V_{Cash Digital}(0)_p^{BS} = e^{-rT} \Phi(-d_2)
 $$
 
 ---
+
 ### 3.
+
 #### Valuing Digital Asset-or-nothing options
 
 $$
@@ -185,12 +198,12 @@ $$
 	\frac{1}{\sqrt{2\pi}} 
 	\int_{x^*}^{\infty} 
 		S_T\mathbb{1}_{S_T>K} e^{-\frac{x^2}{2}} \, dx
-
 $$
 
-$V_{Asset Digital}(0) = e^{-rT}\mathbb{E}[S_T\mathbb{1}_{S_T>K}]$ 
+$V_{Asset Digital}(0) = e^{-rT}\mathbb{E}[S_T\mathbb{1}_{S_T>K}]$
 
 ### BS - Digital Asset-or-nothing Options
+
 $$
 V_{Asset Digital}(0)_c^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}] 
 = 
@@ -199,8 +212,9 @@ V_{Asset Digital}(0)_c^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T>K}]
 	\int_{x^*}^{\infty} 
 		  e^{\sigma\sqrt{T}x-\frac{x^2}{2}} \, dx 
 =
-S_0 \Phi(d_1) 
+S_0 \Phi(d_1)
 $$
+
 $$
 V_{Asset Digital}(0)_p^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T<K}] 
 = 
@@ -209,9 +223,11 @@ V_{Asset Digital}(0)_p^{BS} = e^{-rT} \mathbb{E}[\mathbb{S}_{S_T<K}]
 	\int_{-\infty}^{x^*} 
 		  e^{\sigma\sqrt{T}x-\frac{x^2}{2}} \, dx 
 =
-S_0 \Phi(-d_1) 
+S_0 \Phi(-d_1)
 $$
+
 $$
 d_1 
 = \frac{\ln{\frac{S_0}{K}} + \left( r + \frac{\sigma^2}{2} \right) T}{\sigma \sqrt{T}}
 $$
+

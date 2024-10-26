@@ -1,9 +1,13 @@
 # QF620 Assignment 3
+
 *by Julian Chang*
-### 1. 
+
+### 1.
+
 #### (a)
+
 $$
-\begin{align}
+\begin{aligned}
 
 dX_t 
 &= 
@@ -37,18 +41,24 @@ X_t &= \mu t + \sigma W_t
 
 \text{Var}[X_t] &= \sigma^2 t
 
-\end{align}
+\end{aligned}
+
 $$
+
 $$
 X_t \sim N\left(
 	\mu t, \,
 	\sigma^2 t
 \right)
+
 $$
+
 #### (b)
+
 Let $f(X_t) = \log{X_t},$
+
 $$
-\begin{align}
+\begin{aligned}
 
 dX_t 
 &= 
@@ -60,10 +70,12 @@ X_0 e^{\left(
 			\mu - \frac{\sigma^2}{2}
 		\right) t + \sigma W_t}
 
-\end{align}
+\end{aligned}
+
 $$
+
 $$
-\begin{align}
+\begin{aligned}
 
 \mathbb{E}[X_t] 
 &= 
@@ -80,14 +92,19 @@ X_0 e^{\left(
 	e^{\sigma W_t}
 \right]
 
-\end{align}
+\end{aligned}
+
 $$
+
 $$
 \mathbb{E}[X_t] 
 = 
 X_0 e^{\mu t}
+
 $$
+
 Since, by MGF $\mathbb{E}[e^{\sigma W_t}] = e^{\frac{1}{2} \sigma^2 t}$.
+
 $$
 \begin{align}
 
@@ -123,18 +140,25 @@ X_0^2 e^{2 \mu t}
 \,(e^{\sigma^2 t}-1)
 
 \end{align}
+
 $$
-Where $\text{Var}(e^{\sigma W_t}) = \mathbb{E}[e^{2\sigma W_t}] - \mathbb{E}[e^{\sigma W_t}]^2 = e^{\sigma^2 t} (e^{\sigma^2 t}-1)$ using MGF . 
+
+Where $\text{Var}(e^{\sigma W_t}) = \mathbb{E}[e^{2\sigma W_t}] - \mathbb{E}[e^{\sigma W_t}]^2 = e^{\sigma^2 t} (e^{\sigma^2 t}-1)$ using MGF .
 
 So,
+
 $$
 X_t \sim N\left(
 	X_0 e^{\mu t}, \,
 	X_0^2 e^{2 \mu t} \,(e^{\sigma^2 t}-1)
 \right)
+
 $$
+
 #### (c)
+
 Let $f(X_t,t) = e^{\kappa t} X_t$,
+
 $$
 \begin{align}
 
@@ -163,13 +187,16 @@ e^{kt} \kappa \theta dt + e^{kt}  \sigma dW_t
 X_t &= X_0 e^{-kt} + \theta (1 - e^{-kt}) + \sigma \int_0^t e^{k(s-t)} \sigma \, dW_s 
 
 \end{align}
-$$
+
 $$
 
+$$
 \mathbb{E}[X_t] 
 = 
 X_0 e ^{-\kappa t} + \theta(1-e^{-kt})
+
 $$
+
 $$
 \text{Var}[X_t] 
 = 
@@ -180,23 +207,33 @@ $$
 \mathbb{E}\left[
 	 \sigma^2 \int_0^t e^{2\kappa (s - t)} ds
 \right]
+
 $$
+
 $$
 \text{Var}[X_t] 
 = 
 \frac{\sigma^2}{2\kappa}(1-e^{-2\kappa t} )
+
 $$
+
 $$
 X_t \sim N\left(
 	X_0 e ^{-\kappa t} + \theta(1-e^{-kt}), \,
 	\frac{\sigma^2}{2\kappa}(1-e^{-2\kappa t})
 \right)
+
 $$
+
 ---
+
 ### 2
+
 $$
 Z_t = \frac{X_t}{Y_t}=f(X_t, Y_t)
+
 $$
+
 $$
 \begin{align}
 
@@ -217,27 +254,39 @@ f_x dX_t
 + f_{xy} dX_t dY_t
 
 \end{align}
+
 $$
 
 $$
 dZ_t = \sigma^2 Z_t dt + \sigma Z_t dW_t - \sigma Z_t d\tilde{W_t} - \sigma^2 Z_t \rho dt
+
 $$
+
 Where $dW_t d\tilde{W_t} = \rho dt$ and $\rho$ is correlation between the two Brownian motions.
 
 #### (a)
+
 When brownian motion are independent $\rho = 0$,
+
 $$
 dZ_t = \sigma^2 Z_t dt + \sigma Z_t dW_t - \sigma Z_t d\tilde{W_t}
+
 $$
 
 #### (b)
+
 When brownian motion are independent $\rho = 1$,
+
 $$
 dZ_t = + \sigma Z_t dW_t - \sigma Z_t d\tilde{W_t}
+
 $$
 
 #### (c)
+
 When brownian motion are independent $\rho = \rho$
+
 $$
 dZ_t = \sigma^2 Z_t (1 - \rho) dt + \sigma Z_t dW_t - \sigma Z_t d\tilde{W_t}
+
 $$
