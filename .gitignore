@@ -3,6 +3,7 @@ __pycache__/
 
 # Ignore compiled bytecode files
 *.pyc
+*.pkl
 
 # Ignore virtual environments
 venv/
@@ -20,3 +21,9 @@ Thumbs.db
 .idea/
 QF620_Stochastic Modelling_in_Finance/.DS_Store
 QF620_Stochastic Modelling_in_Finance/.DS_Store
+QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/validPairs5.csv
+QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/validPairs4.csv
+QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/validPairs3.csv
+QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/00 archive/validPairs3.csv
+QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/00 archive/validPairs4.csv
+QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/00 archive/load_data.py
