@@ -395,3 +395,121 @@ Evaluation: Average Total Test Return: mean -0.0296, SD 0.0000`
 - firm up on gamma 0
 - running gamma > 0 experiment
 - should still do some reward scaling
+
+### 14 Dec
+- experiment with running multiple gamma. 
+- ls_gamma = [.5, .1, .2, .9, 0]
+    - exp1: Epoch Total Ave Reward: [0.27656047941275835, -0.0678991421108197, -0.08469468350312535, -0.1809340042907028, -0.2585470411630025]
+    - exp2: Epoch Total Ave Reward: [0.21300592294405787, 0.31927383581329816, -0.19477593352845785, -0.176282995815822, -0.  042197878268430175]
+- ls_gamma = [.9, 0, .5, .1, .2]
+    - Epoch Total Ave Reward: [0.31927383581329816, -0.12529959493439907, 0.31927383581329816, -0.2642522721225163, 0.20685181929893712]
+- settle on gamma 0.5 . try reward clipping
+- increasing reward ||| if reward > 2: reward += 2, elif reward > 1: reward += 1
+    - Epoch Total Ave Reward: [-0.01642047141259907, -0.13440731073407086, 0.07929587537637263, 0.2268478521818123, 0.1095582760267271]
+    - Epoch Ave Ave Reward: 	0.05297
+    - Epoch SD  Ave Reward: 	0.12170 
+- clipping reward ||| reward /= dailypnl_sd, reward = np.clip(reward,-1,1) 
+    - Epoch Total Ave Reward: [-0.11145766569664421, -0.3913613850599167, 0.14032909285942924, -0.1606315485750662, 0.042197878268430175]
+    - Epoch Ave Ave Reward: 	-0.09618
+    - Epoch SD  Ave Reward: 	0.18254 
+- increase reward and penalty ||| , reward /= dailypnl_sd
+            if reward > 2:
+                reward += 2
+            elif reward > 1:
+                reward += 1
+            elif reward < -2:
+                reward -= 2
+            elif reward < -1:
+                reward -= 1
+    - Epoch Total Ave Reward: [0.21300592294405787, 0.1651926853830304, 0.33396093223633744, -0.1651926853830304, 0.062178140797388294]
+    - Epoch Ave Ave Reward: 	0.12183
+    - Epoch SD  Ave Reward: 	0.16801 
+- combine increase reward and clipping ||| 
+            reward /= dailypnl_sd
+            if reward > 2:
+                reward = 2
+            elif reward > .5:
+                reward += 1
+            elif reward < -2:
+                reward = -2
+            elif reward < -.5:
+                reward += -1
+    - exp1 | Epoch Total Ave Reward: [-0.07351450140341671, 0.1760664446499776, -0.20093003717357863, 0.22364736069124266, -0.12529959493439907]
+    - Epoch Ave Ave Reward: 	-0.00001
+    - Epoch SD  Ave Reward: 	0.16882 
+    - exp2 | Epoch Total Ave Reward: [0.23802803428152103, 0.08925582031108967, -0.04759668639518292, 0.03709799710794239, 0.04790310922794429]
+    - Epoch Ave Ave Reward: 	0.07294
+    - Epoch SD  Ave Reward: 	0.09377 
+- combine clipping, also reward shape if further from 0, remove noise
+            reward /= dailypnl_sd
+            if reward > .1:
+                reward = max(2,reward+1)
+            elif reward < -.1:
+                reward = min(-2, reward-1)
+    - bad results
+- revert to earlier increase reward experiment and also set alpha to 0.5. later run alpha experiment
+    - reward /= dailypnl_sd
+            if reward > 2:
+                reward +=2
+            elif reward > 0.5:
+                reward +=1
+            elif reward < -2:
+                reward += -2
+            elif reward < -0.5:
+                reward += -1
+    - Epoch Total Ave Reward: [0.062178140797388294, 0.18198822677533613, -0.1245877739517566]
+    - Epoch Ave Ave Reward: 	0.03986
+    - Epoch SD  Ave Reward: 	0.12615 
+---
+- rerun all with newest reward function
+    - reward /= dailypnl_sd
+            if reward > 2:
+                reward +=2
+            elif reward > 0.5:
+                reward +=1
+            elif reward < -2:
+                reward += -2
+            elif reward < -0.5:
+                reward += -1
+    - Epoch Total Ave Reward: [0.05321204568778015, -0.06916991576129747, -0.06925978742821415]
+    - Epoch Ave Ave Reward: 	-0.02841
+    - Epoch SD  Ave Reward: 	0.05771
+    - really bad returns on both gamma =0 and >0. alpha was lower in =0.
+    - might be under fitting the reward. maybe clip the punishment and leave the rewards
+- rerun with removing the negative returns
+    - not good result
+- rerun with no reward scaling, only normalisation
+    - small bactch run
+    - gamma =0 || Epoch Total Ave Reward: [-0.14945136647535748, -0.04198132710258564, -0.09593289795481606]
+        - Epoch Ave Ave Reward: 	-0.09579
+        - Epoch SD  Ave Reward: 	0.04387 
+    - gamma <0 || Epoch Total Ave Reward: [0.1921647228758977, 0.1920243147234945, 0.02189542255279333]
+        - Epoch Ave Ave Reward: 	0.13536
+        - Epoch SD  Ave Reward: 	0.08023
+- rerun with no reward scaling, only normalisation
+    - large bactch run
+        - gamma=0 || Epoch Total Ave Reward: [-0.14352958434999935, 0.13691287936579682, -0.023256067870187767]
+        - Epoch Ave Ave Reward: 	-0.00996
+        - Epoch SD  Ave Reward: 	0.11488 
+        - gamma=0.5 || Epoch Total Ave Reward: [0.1809340042907028, 0.17501222216534448, -0.10711308005452447]
+        Epoch Ave Ave Reward: 	0.08294
+        Epoch SD  Ave Reward: 	0.13441 
+    - definitely not converged yet
+- smaller batch run with smaller alpha
+    - gamma=0 ||
+        - Epoch Total Ave Reward: [0.2704063757676372, 0.043035549587218724, -0.08364046101849247, 0.2674382057968297, -0.08521765750173113, 0.1054302415504514]
+        - Epoch Ave Ave Reward: 	0.08624
+        - Epoch SD  Ave Reward: 	0.14563 
+    - gamma=0.5 || 
+        - Epoch Total Ave Reward: [0.07997502788129901, 0.1448902296673933, 0.23595556798148493]
+        - Epoch Ave Ave Reward: 	0.15361
+        - Epoch SD  Ave Reward: 	0.06398 
+- larger batch run with smaller alpha
+    - gamma=0
+        - Epoch Total Ave Reward: [0.05913382781313888, -0.1809340042907028, -0.12322712863436254, -0.01642047141259907, 0.03731454827378737]
+        - Epoch Ave Ave Reward: 	-0.04483
+        - Epoch SD  Ave Reward: 	0.09277 
+    - gamma=0.5
+        - Epoch Total Ave Reward: [-0.09593289795481606, 0.339576291528935, -0.023256067870187767, 0.20388364932812958, -0.22250326653969316]
+    - Epoch Ave Ave Reward: 	0.04035
+    - Epoch SD  Ave Reward: 	0.20396 
