@@ -4,6 +4,50 @@ Aspiring Quant!
 
 ## Year 1 Term 1
 
+### QF620 Stochastic Modelling
+
+#### Assignment 1
+
+> QF620_Stochastic Modelling_in_Finance/Assignment_1/assignment_1_notebook.ipynb
+
+- Risk Neutral Asset pricing, Binomial tree, Cox-Ross-Rubinstein formulation
+- Brownian motion, Weiner Process
+
+#### Assignment 2
+
+> QF620_Stochastic Modelling_in_Finance/Assignment_2/QF620 Assignment 2.md
+
+- Exotic option pricing
+
+#### Assignment 3
+
+> QF620_Stochastic Modelling_in_Finance/Assignment_3/QF620 Assignment 3.md
+
+- SDE
+
+#### Assignment 4
+
+> QF620_Stochastic Modelling_in_Finance/Assignment_4/QF620 Assignment 4.pdf
+
+- model free option pricing
+
+#### Project
+
+> QF620_Stochastic Modelling_in_Finance/Project/Project_Question.pdf
+
+- Part 1 option pricing
+  - Black Scholes
+  - Bachelier
+  - Black
+  - Displaced Diffusion
+- Part 2 option market pricing model
+  - SABR
+  - Displaced Diffusion
+- Part 3 Exotic option pricing
+  - exotic payoffs - model-based and Monte Carlo
+- Part 4 Dynamic hedging
+  - Black-Scholes dynamic hedging comparing frequencies of delta hadging and tracking error
+
 ### QF600 Asset Pricing
 
 #### Homework 1
@@ -52,32 +96,29 @@ Using OLS to obtain market and idiosyncratic risks per Market Model. Also measur
 
 Instead of only using Risk-free rate as in Homework 1, used Market Portfolio to compare relative performance and volatility of portfolios. In the second part, obtained an estimate for the minimum variance portfolio by computing returns and variance for random portfolios using Monte Carlo method. Showing that we can obtain a wider range of portfolios by taking the reciprocal of the random weights.
 
-### QF620 Stochastic Modelling
+## Year 1 Special Term
 
-#### Assignment 1
+### QF634 Applied Quantitative Research Methods
 
-> QF620_Stochastic Modelling_in_Finance/Assignment_1/assignment_1_notebook.ipynb
+#### Homework 1
 
-- Risk Neutral Asset pricing, Binomial tree, Cox-Ross-Rubinstein formulation
-- Brownian motion, Weiner Process####
+Linear Regression
 
-#### Assignment 2
+#### Homework 2
 
-> QF620_Stochastic Modelling_in_Finance/Assignment_2/QF620 Assignment 2.md
+Classification
 
-- Exotic option pricing
+- Logistic Regression
+- AUC ROC
 
-#### Assignment 3
+#### Homework 3
 
-> QF620_Stochastic Modelling_in_Finance/Assignment_3/QF620 Assignment 3.md
+Ensemble Methods
 
-- SDE
+- Random Forest
 
-#### Assignment 4
+#### Homework 4
 
-> QF620_Stochastic Modelling_in_Finance/Assignment_4/QF620 Assignment 4.pdf
+Neural Networks
 
-- model free option pricing
-
-
-some change
+- Keras
