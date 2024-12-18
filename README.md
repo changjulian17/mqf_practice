@@ -61,7 +61,6 @@ Instead of only using Risk-free rate as in Homework 1, used Market Portfolio to 
 - Risk Neutral Asset pricing, Binomial tree, Cox-Ross-Rubinstein formulation
 - Brownian motion, Weiner Process####
 
-
 #### Assignment 2
 
 > QF620_Stochastic Modelling_in_Finance/Assignment_2/QF620 Assignment 2.md
@@ -79,3 +78,6 @@ Instead of only using Risk-free rate as in Homework 1, used Market Portfolio to 
 > QF620_Stochastic Modelling_in_Finance/Assignment_4/QF620 Assignment 4.pdf
 
 - model free option pricing
+
+
+some change
