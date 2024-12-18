@@ -51,9 +51,7 @@ Deduct the mean from all values to translate to 0 axis
 2014 - 2023 train data since NN need a lot of training data {end 2023 idx == 2868}
 2024 onwards (5 months) test data
 
-
-
-# Report 
+# Report
 
 ## Pair trading
 
@@ -91,6 +89,8 @@ State space of 0, 0, 1, 0, 0, 0 would mean the current spread lies between the 1
 
 ### Data Analysis
 
+> QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/01_project_data_analysis.ipynb
+
 Taking the 10 clustered pair trades as suggested from earlier in the report. We apply the baseline trading strategy to get the following results:
 
 ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXezdjy29CloiGL4-MQF--Qbt6i8J1HrNn5Oe73kHPILiFF0HJi5Ik7FHEbO8OtEbaWxb7LKbYUsBBtIyi0xAbSIJVBHQOvH8Izk-6DP5guNDVSFOoKbsybX7xpb2ea38xw3Xapgag?key=V2h0ZgPC9IZPL_YwJIPszB_n)
@@ -109,6 +109,8 @@ Taking the 10 clustered pair trades as suggested from earlier in the report. We 
 To analyse the data we observe the total returns in each state-action pair for the entire historical dataset.
 
 The results in the table shows trailing twelve month (TTM) return for each trading position in each state-action pair. The returns are greater with an expected reversion to mean. Example 111000 is when the spread is above 2 SD high, a short trade is the state-action pair that has the greatest return.
+
+> QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/03_project_state_space_analysis.ipynb
 
 ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXfwlHVtdY0zo0Mi_T7feOQ0VaQyahW0R2wHxBymeWd0858yIQb6vd6WjyGgelahJM18HdIIm7Tcpqo9WkxL1x1ozBarxydGQyf_cvBI3iZP2PKjzeZSXlIwrs8XBA-bwUkXTc1y?key=V2h0ZgPC9IZPL_YwJIPszB_n)
 
@@ -154,6 +156,8 @@ Uses WeightedRandomSampler and parameterised weights by reward so state actions 
 
 ## Model - Q Learning
 
+> QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/10_project_q_functions_Qonly_scaleReduceInput.ipynb
+
 Q-learning is a model-free reinforcement learning algorithm that helps an agent learn the optimal action-selection policy by iteratively updating Q-values, which represent the expected rewards of actions in specific states. Reinforcement Learning is a paradigm of the Learning Process in which a learning agent learns, over time, to behave optimally in a certain environment by interacting continuously in the environment. The agent during its course of learning experiences various situations in the environment it is in. These are called states. The agent while being in that state may choose from a set of allowable actions which may fetch different rewards (or penalties). Over time, The learning agent learns to maximize these rewards to behave optimally at any given state it is in. Q-learning is a basic form of Reinforcement Learning that uses Q-values (also called action values) to iteratively improve the behavior of the learning agent.
 
 Key Components of Q-learning
@@ -176,6 +180,8 @@ Exploration through Random Action: With probability ϵ, occasionally, rather tha
 
 ## Model - Deep Q Learning
 
+> QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/20_project_q_functions_DQN_7inputs.ipynb
+
 Deep Q-Learning (DQN) is a powerful reinforcement learning technique that addresses the limitations of traditional Q-learning in handling large or continuous state spaces.
 
 1. Neural Network Approximation: DQN uses a neural network to estimate Q-values for state-action pairs.
@@ -197,6 +203,8 @@ Q Network and Target Network shared the same structure of one 7 node input layer
 
 ## Results
 
+> QF634_Applied_Quantitative_Research_Methods/QF634 Project/Pair Trading/30_plot_results.ipynb
+
 To get an aggregate result, the final return will be the total daily return over the period. Returns in train set are from start 2014 to end 2023, testset are from start 2024 to May 2024.
 
 
@@ -211,7 +219,9 @@ Value: total daily return in % (average daily return in %)
 
 ## Q Table
 
-#### Q Learning without long term rewards![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXc8AKX9MPt98qbGKgdFx8QK-pu4jR7KeYsZ6VZ3bCyjEzY45ZBdQE5KBk-HMu-GtLNxaiWdGX53triVxQwmJB2eoFBr5YrmL0jpdMWvDgP3WLC5LCNsmQt3YiDfaYlRlmjXWzqy?key=V2h0ZgPC9IZPL_YwJIPszB_n)
+#### Q Learning without long term rewards
+
+![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXc8AKX9MPt98qbGKgdFx8QK-pu4jR7KeYsZ6VZ3bCyjEzY45ZBdQE5KBk-HMu-GtLNxaiWdGX53triVxQwmJB2eoFBr5YrmL0jpdMWvDgP3WLC5LCNsmQt3YiDfaYlRlmjXWzqy?key=V2h0ZgPC9IZPL_YwJIPszB_n)
 
 Without long term rewards, Q is updated with rewards without bellman equation, we get simple mean reversion strategy (short when spread > 0, long when spread < 0)
 
@@ -225,7 +235,9 @@ With long term rewards, but with a discount rate at 0, we do not take into accou
 
 By having a discount rate greater than 0, we consider potential long term rewards. There is better generalised performance when updating Q values with the next state in mind.
 
-### Deep Q Network![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXdCLWX-x5QMB1gxxwjogVIQSfZ5YsYn6eOaAqR7Kn1p-xBDmc5fiORhzTC_A9716CbXLqHXABxvI846cM3xTEwtNcgr56MmxDgkfSRppynA7KRKDrbNzAoKJ4powhlmMw7QVcs7LQ?key=V2h0ZgPC9IZPL_YwJIPszB_n)![Plot of total episode return against episodes. Training for DQN for 2 epochs with 20 episodes each. ](https://lh7-rt.googleusercontent.com/docsz/AD_4nXeVYbCq6Su-AJBlJ01ZlWVtnhrrwc-87pZuGd0ldHuz1Xh8IceeKCUBSwuJFmVyKxbpxrq-g3a8ftha7tQl8E2sMQqEk4TvTL3msSItmARZksLi-D1QBwvJuPdLXn8qcmcVo8Aujg?key=V2h0ZgPC9IZPL_YwJIPszB_n)
+### Deep Q Network
+
+![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXdCLWX-x5QMB1gxxwjogVIQSfZ5YsYn6eOaAqR7Kn1p-xBDmc5fiORhzTC_A9716CbXLqHXABxvI846cM3xTEwtNcgr56MmxDgkfSRppynA7KRKDrbNzAoKJ4powhlmMw7QVcs7LQ?key=V2h0ZgPC9IZPL_YwJIPszB_n)![Plot of total episode return against episodes. Training for DQN for 2 epochs with 20 episodes each. ](https://lh7-rt.googleusercontent.com/docsz/AD_4nXeVYbCq6Su-AJBlJ01ZlWVtnhrrwc-87pZuGd0ldHuz1Xh8IceeKCUBSwuJFmVyKxbpxrq-g3a8ftha7tQl8E2sMQqEk4TvTL3msSItmARZksLi-D1QBwvJuPdLXn8qcmcVo8Aujg?key=V2h0ZgPC9IZPL_YwJIPszB_n)
 
 Figure on the left shows a list of state and actions from the Q network. Right shows training of two epochs of 20 episodes each.The model heavily relies on mean reversion as the solution.
 
