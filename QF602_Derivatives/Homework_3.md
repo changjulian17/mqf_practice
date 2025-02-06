@@ -7,7 +7,7 @@
 Assume European options. Black-Scholes Call option is given by
 
 $$
-e^{-rt}(F_0(T)\phi(d_1)-K\phi(d_2))^+
+e^{-rt}(F_0(T)\phi(d_1)-K\phi(d_2))
 
 $$
 
@@ -78,4 +78,4 @@ $$
 $$
 
 If the delta of a call with maturity T and strike K is x, the delta of a put with the same maturity and strike is $x - e^{-qT}$.
-If the vega of a call with maturity T and strike K is y, what is the vega of put with the same maturity and strike is $y$.
+If the vega of a call with maturity T and strike K is y, the vega of put with the same maturity and strike is $y$.
