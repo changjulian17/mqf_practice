@@ -11,6 +11,7 @@ env/
 
 # Ignore OS-specific files
 .DS_Store
+.conda
 Thumbs.db
 
 # Ignore logs
