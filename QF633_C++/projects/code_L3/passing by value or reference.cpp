@@ -23,13 +23,13 @@ class Student {
         cout<< "calling student default construtor"<<endl;
     }
     
-    //copy constructor
-    Student(const Student& rhs) {
-        cout<< "calling student copy construtor"<<endl;
-        age = rhs.age;
-        name = rhs.name;
-        GPA = rhs.GPA;
-    };
+    // //copy constructor
+    // Student(const Student& rhs) {
+    //     cout<< "calling student copy construtor"<<endl;
+    //     age = rhs.age;
+    //     name = rhs.name;
+    //     GPA = rhs.GPA;
+    // };
 
     Student(std::string _name, int _age, double _gpa) {
         name= _name;
@@ -53,11 +53,11 @@ class Student {
         
     }
 
-private:
-    // Public data members
-    std::string name;
-    int age;
-    double GPA;
+    private:
+        // Public data members
+        std::string name;
+        int age;
+        double GPA;
 };
 
 double getStudentGPA1(Student s1, Student s2) {
@@ -76,7 +76,7 @@ double getStudentGPA4(const Student& s1, const Student& s2) {
 int main() 
 {
     //example 1
-    if (true) {
+    if (false) {
         int x = 5, y = 7;
 
         // Passing values to the function by copy
@@ -99,13 +99,15 @@ int main()
     }
     
     //example 2, in case of object
-    if(false) {
+    if(true) {
         Student s1 = Student("mike", 18, 4.0);
         Student s2 = Student("paul", 19, 4.5);
+        cout << "S1 ADDRESS IN MAIN: " << &s1 << endl;
+
         Student s3(s1);
         double total;
         cout<<"calling func1"<<endl;
-        total = getStudentGPA1(s1, s2);
+        total = getStudentGPA1(s1, s2); // why does it go back to copy constructor
         cout<< total << endl;
         cout<<"calling func2"<<endl;
         total = getStudentGPA2(&s1, &s2);

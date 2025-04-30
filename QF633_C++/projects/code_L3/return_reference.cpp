@@ -6,7 +6,8 @@ using namespace std;
 // Function that returns a reference to a vector
 std::vector<int>& getVector() {
     // Declare a static vector (for the sake of example)
-    static std::vector<int> myVector = {1, 2, 3, 4, 5};
+    static std::vector<int> myVector = {1, 2, 3, 4, 5};     // this is a template class
+    // static means the value will live in memory until the program ends
     // std::vector<int> myVector = {1, 2, 3, 4, 5};
 
     // Return a reference to the vector
@@ -37,12 +38,12 @@ int main() {
 
     //tricky example
     if (1) {
-        test* t1 = new test();
-        test t2 = test();
-        cout<<&t2<<endl;
-        t2.x=15;
-        t1->x = 10;
-        auto t_ref = getTestRef(t2);
+        test* t1 = new test();      // data in heap
+        test t2 = test();           // data in stack
+        cout<<&t2<<endl;        // address of t2
+        t2.x=15;            // instantiating x in t2
+        t1->x = 10;         // instantiating x in t1 uses arrow
+        auto t_ref = getTestRef(t2);    // why is the reference able to change to a value, isnt the reference a diff data type?
         cout << t_ref.x <<endl;
         t_ref.x = 20;
         cout << "pointer t1 x: "<< t2.x <<endl;

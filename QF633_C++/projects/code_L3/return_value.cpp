@@ -1,4 +1,5 @@
 #include <iostream>
+using namespace std;
 
 // Define a structure named Point
 struct Point {
@@ -11,11 +12,12 @@ Point createPoint(int x, int y) {
     Point p;
     p.x = x;
     p.y = y;
+    cout << "in-function p address: " << &p << endl;
     return p;
 }
 
 Point addPoint(Point& p1, Point& p2) {
-    Point p;
+    Point p;    // new point is created
     p.x = p1.x + p2.x;
     p.y = p1.y + p2.y;
     return p;
@@ -24,6 +26,7 @@ Point addPoint(Point& p1, Point& p2) {
 int main() {
     // Call the function and store the returned Point structure
     Point myPoint = createPoint(3, 7);
+    cout << &myPoint << endl;
 
     // Access the members of the returned structure
     std::cout << "X-coordinate: " << myPoint.x << std::endl;
