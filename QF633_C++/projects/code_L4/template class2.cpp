@@ -21,6 +21,10 @@ public:
         return second;
     }
 
+    T2 operator[](T1 a) {
+        return first == a ? second : T2();
+    }
+
 };
 
 int main() {
@@ -30,6 +34,10 @@ int main() {
 
     Pair<string, bool> pair2("hello", true);
     cout << "First: " << pair2.GetFirst() << ", Second: " << pair2.GetSecond() << endl;
+
+
+    auto result = pair1[10]; // Accessing the second element using the first element
+    cout << "Result: " << result << endl; // Should print 3.14
 
     return 0;
 }

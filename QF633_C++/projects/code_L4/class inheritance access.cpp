@@ -47,10 +47,10 @@ int main() {
     baseObj.publicMethod();
 
     // Cannot access private and protected members from outside the class
-     baseObj.privateVar = 15;  // This would result in a compilation error
-    baseObj.privateMethod();  // This would result in a compilation error
-    baseObj.protectedVar = 25;  // This would result in a compilation error
-    baseObj.protectedMethod();  // This would result in a compilation error
+    // baseObj.privateVar = 15;  // This would result in a compilation error
+    // baseObj.privateMethod();  // This would result in a compilation error
+    // baseObj.protectedVar = 25;  // This would result in a compilation error
+    // baseObj.protectedMethod();  // This would result in a compilation error
 
     // Accessing members through a derived class
     Derived derivedObj;

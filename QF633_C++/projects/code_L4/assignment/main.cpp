@@ -57,7 +57,7 @@ void loadTradeFromFile(vector<OptionTrade*>&tradesSet, const string& filename)
 
         // You could also process each line immediately here
         // use split function to get the neede information for trade
-        auto optTrade = new OptionTrade();
+        trade* optTrade = new OptionTrade();  // we want the base class pointer but need to create option trade object
         tradesSet.push_back(optTrade);
     }
 
@@ -92,7 +92,7 @@ void writeTofile(vector<PvResult>& result, const string& filename)
 
 int main () {
     cout << "compute option pv task is started." << endl;
-    vector<OptionTrade*> tradesSet;
+    vector<OptionTrade*> tradesSet; // base class pointer but need to create option trade object
     string file = "";
     loadTradeFromFile(tradesSet, file);
     vector<double> pvResult;
@@ -106,9 +106,12 @@ int main () {
       
         double pv = trade.calculatePv(spot, vol, rate);
         pvResult.push_back(pv);
+        delete trade; // free memory
 
     }
 
+
+    tradeSet.clear(); // free memory
     /*
     save result back into a file
     */

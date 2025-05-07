@@ -2,39 +2,48 @@
 
 using namespace std;
 
-
-class Shape {
+class Shape
+{
 
 public:
-    virtual void draw() {
+    virtual void draw()
+    {
         cout << "Drawing a shape" << endl;
     }
 };
 
-class Circle : public Shape {
+class Circle : public Shape
+{
 
 public:
-    void draw() override {
+    void draw() 
+    {
         cout << "Drawing a circle" << endl;
     }
 };
 
-class Square : public Shape {
+class Square : public Shape
+{
 
 public:
-    void draw() override {
+    void draw() override
+    {
         cout << "Drawing a square" << endl;
     }
 };
 
-int main() {
-    
-    Shape* shape0 = new Shape();
-    Shape* shape1 = new Circle(); //pay attention
-    Shape* shape2 = new Square(); //pay attention
+int main()
+{
+
+    Shape *shape0 = new Shape();
+    Shape *shape1 = new Circle(); // pay attention
+    Shape *shape2 = new Square(); // pay attention
     shape0->draw();
-    shape1->draw();  // Calls draw() from Circle
-    shape2->draw();  // Calls draw() from Square
+    shape1->draw(); // Calls draw() from Circle
+    shape2->draw(); // Calls draw() from Square
+
+    Circle c2 = Circle();
+    c2.draw(); // Calls draw() from Circle because c2 is a Circle object. so child class method is called.
 
     delete shape0;
     delete shape1;

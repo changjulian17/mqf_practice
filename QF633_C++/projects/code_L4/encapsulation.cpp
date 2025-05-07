@@ -31,7 +31,6 @@ public:
 int main() {
     Circle myCircle;
     myCircle.setRadius(5.0);
-    myCircle.
 
     cout << "Radius of the cirlce: "<< myCircle.getRadius() << endl;
     cout << "Area of the circle: " << myCircle.getArea() << endl;

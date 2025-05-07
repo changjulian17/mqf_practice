@@ -9,7 +9,7 @@ public:
     }
 
     // Virtual destructor, if do not use virtual, there will be memory leak
-    virtual ~Base() {
+    virtual ~Base() { // derived class has to use virtual destructor. better to use virtual destructor in base class
         std::cout << "Base class destructor" << std::endl;
     }
 };

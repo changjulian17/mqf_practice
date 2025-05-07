@@ -3,7 +3,7 @@
 using namespace std;
 
 
-class Bank {
+class  {
 
 public:
     void withdrawAtm() {
