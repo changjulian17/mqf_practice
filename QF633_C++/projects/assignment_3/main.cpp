@@ -8,14 +8,6 @@
 
 using namespace std;
 
-struct OptionTrade
-{
-    double notional;
-    double strike;
-    double expiry;
-    bool isCall;
-};
-
 // Splits a string into a vector of substrings based on a given separator.
 void splitString(vector<string>&output, const string& inputLine, const char separator)
 {
@@ -111,7 +103,6 @@ int main () {
         double n = trade.notional;        
         double pv = BlackScholes(trade.notional, trade.strike , trade.expiry, spot, vol, rate, trade.isCall);
         pvResult.push_back(pv);
-
     }
 
     /*
@@ -120,5 +111,4 @@ int main () {
     writeResultToFile(pvResult, "result.txt");
     cout << "compute option pv task is completed." << endl;
     return 0;
-    
 }
