@@ -3,6 +3,8 @@
 #include <vector>
 #include <stdexcept>
 #include <string>
+#include <regex>
+
 #include "trade.h" // Include the OptionTrade class
 #include "date.h"  // Include the Date class
 #include "black.h"
@@ -24,7 +26,7 @@ void splitString(vector<string>& output, const string& inputLine, const char sep
 }
 
 // Load trades from file into a vector of OptionTrade objects
-void loadTradeFromFile(vector<OptionTrade>& tradesSet, const string& filePath) {
+void loadTradeFromFile(vector<OptionTrade*>& tradesSet, const string& filePath) {
     ifstream inputFile(filePath); // Open the file
     try {
         if (inputFile) {
@@ -42,23 +44,20 @@ void loadTradeFromFile(vector<OptionTrade>& tradesSet, const string& filePath) {
                     try {
                         // Validate and parse notional
                         double notional;
-                        try {
-                            notional = stod(lineOfTrade[1]);
-                        } catch (const invalid_argument& e) {
+                        if (!regex_match(lineOfTrade[1], regex(R"(^[-+]?\d*\.?\d+$)"))) {
                             cerr << "Invalid notional value: " << lineOfTrade[1] << " in line: " << line << endl;
                             continue; // Skip this trade and move to the next
                         }
+                        notional = stod(lineOfTrade[1]);
 
+                        // Parse other fields
                         double strike = stod(lineOfTrade[2]);
                         bool isCall = lineOfTrade[3] == "true";
                         Date startDate(lineOfTrade[4].substr(1, lineOfTrade[4].size() - 2)); // Remove quotes
                         Date endDate(lineOfTrade[5].substr(1, lineOfTrade[5].size() - 2));   // Remove quotes
 
-                        // Calculate expiry using Date class
-                        double expiry = endDate - startDate;
-
-                        // Create an OptionTrade object and add it to the vector
-                        OptionTrade trade(notional, strike, expiry, isCall);
+                        // Dynamically create an OptionTrade object and add it to the vector
+                        OptionTrade* trade = new OptionTrade(notional, strike, startDate, endDate, isCall);
                         tradesSet.push_back(trade);
                     } catch (const exception& e) {
                         cerr << "Error processing trade: " << e.what() << " in line: " << line << endl;
@@ -91,7 +90,7 @@ void writeResultToFile(const vector<double>& result, const string& fileName) {
 
 int main() {
     cout << "Compute option PV task is started." << endl;
-    vector<OptionTrade> tradesSet;
+    vector<OptionTrade*> tradesSet;
     string file = "trades.txt";
     loadTradeFromFile(tradesSet, file);
 
@@ -102,12 +101,18 @@ int main() {
 
     for (auto& trade : tradesSet) {
         // Call the calculatePv method of the OptionTrade class
-        double pv = trade.calculatePv(spot, vol, rate);
+        double pv = trade->calculatePv(spot, vol, rate);
         pvResult.push_back(pv);
     }
 
     // Save result back into a file
     writeResultToFile(pvResult, "result.txt");
     cout << "Compute option PV task is completed." << endl;
+
+    // Clean up dynamically allocated memory
+    for (auto& trade : tradesSet) {
+        delete trade;
+    }
+
     return 0;
 }

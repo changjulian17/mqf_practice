@@ -15,6 +15,11 @@ public:
     // Overload "-" operator to compute the year fraction between two dates
     double operator-(const Date& dt2) const;
 
+    // Getter methods for year, month, and day
+    int getYear() const { return year; }
+    int getMonth() const { return month; }
+    int getDay() const { return day; }
+    
 private:
     int year = 1900;
     int month = 1;

@@ -1,5 +1,4 @@
-trade pv: 1.6379e+06
-trade pv: 23.3768
-trade pv: 16344
-trade pv: 74443
-trade pv: 145050
+trade pv: 1.33683e+06
+trade pv: 11129.2
+trade pv: 107180
+trade pv: 82894.3
