@@ -26,11 +26,13 @@ public:
     }
 
     // Constructor that calculates expiry
-    OptionTrade(double notional, double strike, const Date& start, const Date& end, bool isCall);
+    OptionTrade(double notional, double strike, const Date& start, const Date& end, bool isCall, int tradeId);
 
     double calculatePv(double spot, double vol, double rate) const override;
 
     string getTradeDetails() const override;
+
+    int getTradeId() const { return m_tradeId; } // Add this method
 
 private:
     double m_notional = 0;
@@ -39,6 +41,7 @@ private:
     double m_expiry = 0; // Expiry in years
     Date m_start;
     Date m_end;
+    int m_tradeId; // Add a member variable to store the trade ID
 };
 
 

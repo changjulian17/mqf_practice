@@ -7,8 +7,8 @@
 trade::~trade() {}
 
 // Constructor for OptionTrade that calculates expiry
-OptionTrade::OptionTrade(double notional, double strike, const Date& start, const Date& end, bool isCall)
-    : m_notional(notional), m_strike(strike), m_isCall(isCall), m_start(start), m_end(end) {
+OptionTrade::OptionTrade(double notional, double strike, const Date& start, const Date& end, bool isCall, int tradeId)
+    : m_notional(notional), m_strike(strike), m_isCall(isCall), m_start(start), m_end(end), m_tradeId(tradeId) {
     m_expiry = m_end - m_start; // Calculate expiry using Date class
     cout << "OptionTrade constructor is called. Expiry: " << m_expiry << " years" << endl;
 }

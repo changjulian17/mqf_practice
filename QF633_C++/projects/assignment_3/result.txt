@@ -1,4 +1,4 @@
-trade pv: 1.33683e+06
-trade pv: 11129.2
-trade pv: 107180
-trade pv: 82894.3
+Trade ID: 1, PV: 1.33683e+06
+Trade ID: 3, PV: 11129.2
+Trade ID: 4, PV: 107180
+Trade ID: 5, PV: 82894.3
