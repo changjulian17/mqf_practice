@@ -36,14 +36,11 @@ void loadTradeFromFile(vector<OptionTrade*>& tradesSet, const string& filePath) 
             }
 
             while (getline(inputFile, line)) { // Read each line
-                cout << line << endl; // Print the line (or process it)
                 vector<string> lineOfTrade;
                 splitString(lineOfTrade, line, ';');
                 int tradeId = stoi(lineOfTrade[0]);
                 if (tradeId < 6) {
                     try {
-                        // Validate and parse notional
-                        double notional;
                         if (!regex_match(lineOfTrade[1], regex(R"(^[-+]?\d*\.?\d+$)"))) {
                             cerr << "Invalid notional value: " << lineOfTrade[1] << " in line: " << line << endl;
                             continue; // Skip this trade and move to the next
