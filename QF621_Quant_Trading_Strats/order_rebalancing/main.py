@@ -2,6 +2,7 @@ from src.data_loader import load_and_filter_data
 from src.strategy import OBIVWAPStrategy
 from src.plot import plot_account_balance
 from src.performance import calculate_performance_metrics  # Import the performance metrics function
+from src.performance import calculate_daily_sharpe_ratio
 import matplotlib.pyplot as plt
 import os
 
@@ -37,6 +38,9 @@ if __name__ == "__main__":
         
         # Calculate and print performance metrics
         calculate_performance_metrics(backtest_data["Account_Balance"].to_numpy())
+        
+        # Pass the Polars DataFrame to calculate_daily_sharpe_ratio
+        calculate_daily_sharpe_ratio(backtest_data)
     
     # Show all plots at the end
     plt.show()
