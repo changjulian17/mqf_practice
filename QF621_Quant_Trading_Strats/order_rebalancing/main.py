@@ -8,12 +8,12 @@ import os
 
 # Configuration Parameters
 VWAP_WINDOW = 20  # Rolling window size for VWAP calculation
-OBI_THRESHOLD = 0.2  # Threshold for Order Book Imbalance (OBI) signals
+OBI_THRESHOLD = 0.05  # Threshold for Order Book Imbalance (OBI) signals
 EX_FILTER = "Q"  # Exchange filter
 QU_COND_FILTER = "R"  # Quote condition filter
 
 # List of stock tickers to analyze
-STOCK_TICKERS = ["AAPL", "TSLA"]  # Example tickers
+STOCK_TICKERS = ["AAPL", "TSLA", "NVDA"]  # Example tickers
 DATA_FILE = "./QF621_Quant_Trading_Strats/order_rebalancing/data/3_stock_24hrs.csv"
 
 if __name__ == "__main__":
