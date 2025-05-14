@@ -40,7 +40,7 @@ protected:
 	double currentSpot; // current market spot price
 };
 
-class CRRBinomialTreePricer : public BinomialTreePricer
+class CRRBinomialTreePricer : public BinomialTreePricer // realistic implementation to actual quant models
 {
 public:
 	CRRBinomialTreePricer(int N) : BinomialTreePricer(N) {}
@@ -54,7 +54,7 @@ protected:
 	// double GetProbDown() const { return 1 - p; }
 };
 
-class JRRNBinomialTreePricer : public BinomialTreePricer
+class JRRNBinomialTreePricer : public BinomialTreePricer		// realistic implementation to actual quant work
 {
 public:
 	JRRNBinomialTreePricer(int N) : BinomialTreePricer(N) {}

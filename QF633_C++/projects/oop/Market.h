@@ -40,25 +40,19 @@ class Market
 {
 public:
 	Date asOf;
-	char* name;		// pay attention to the memory leak, this is a pointer, not a string
+	std::string name;		// pay attention to the memory leak, this is a pointer, not a string
 
 	Market() {
 		cout << "default market constructor is called by object@" << this << endl;
 	}
 
-	Market(const Date& now) : asOf(now) {		// initializer list
+	Market(const Date& now) : asOf(now), name("test") {		// initializer list
 		cout << "market constructor is called by object@" << this << endl;
 		name = new char[5];
-		strcpy(name, "test");		// this is a pointer so can only assign name this way
 	}
 
-	Market(const Market& other) : asOf(other.asOf) {
+	Market(const Market& other) : asOf(other.asOf), name(other.name) {
 		cout << "copy constructor is called by object@" << this << endl;
-		// deep copy behaviour is important here
-		if (other.name != nullptr) {
-			name = new char[strlen(other.name) + 1];
-			strcpy(name, other.name);
-		}
 	}
 
 	Market& operator=(const Market& other) {
@@ -71,8 +65,6 @@ public:
 
 	~Market() {
 		cout << "Market destructor is called" << endl;
-		if (name != nullptr)
-			delete name;
 	}
 
 	void Print() const;

@@ -28,7 +28,7 @@ void BinomialTreePricer::ModelSetup(double S0, double sigma, double r, double dt
 
 double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade) {
 	// model setup
-	double T = trade.GetExpiry() - mkt.asOf;
+	double T = trade.GetExpiry() - mkt.asOf;		// need to ensure overload operator - for Date
 	double dt = T / nTimeSteps;
 	double stockPrice = 0, vol = 0, rate = 0;
 	/*

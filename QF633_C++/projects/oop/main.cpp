@@ -37,6 +37,7 @@ int main()
 	//cin >> newDate;
 	//cout << newDate;
 	
+
 	Market mkt0;
 	Market mkt1 = Market(valueDate);		// deep copy constructor
 	Market mkt2(mkt1);
@@ -46,6 +47,18 @@ int main()
 	/*
 	load data from file and update market object with data
 	*/
+	string curveFile = "curve.txt";
+	string volFile = "vol.txt";	
+	string bondFile = "bond.txt";
+	string stockFile = "stock.txt";
+	string curveData;
+	string volData;	
+	string bondData;
+	string stockData;
+	readFromFile(curveFile, curveData);
+	readFromFile(volFile, volData);
+	readFromFile(bondFile, bondData);
+	readFromFile(stockFile, stockData);
 
 	//task 2, create a portfolio of bond, swap, european option, american option
 	//for each time, at least should have long / short, different tenor or expiry, different underlying
