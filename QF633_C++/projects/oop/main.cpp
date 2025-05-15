@@ -51,14 +51,7 @@ int main()
 		valueDate.month = timeInfo.tm_mon + 1; //0 based
 		valueDate.day = timeInfo.tm_mday;
 	};
-	cout << valueDate << endl;			// print out the current date
-	//Date newDate;
-	//cin >> newDate;
-	//cout << newDate;
 	
-
-	Market mkt(valueDate);	// create a market object
-
 	/*
 	load data from file and update market object with data
 	*/
@@ -66,53 +59,11 @@ int main()
 	string volFile = "vol.txt";	
 	string bondFile = "bondPrice.txt";
 	string stockFile = "stockPrice.txt";
-	string curveData;
-	string volData;	
-	string bondData;
-	string stockData;
 
-	auto curvePairs = readKeyValueFile(curveFile);
-	auto volPairs = readKeyValueFile(volFile);
-	auto bondPairs = readKeyValueFile(bondFile);
-	auto stockPairs = readKeyValueFile(stockFile);
+	Market mkt = buildMarket(valueDate, curveFile, volFile, bondFile, stockFile);
 
-	RateCurve usdSofr("USD-SOFR");
-    for (const auto& kv : curvePairs) {
-        const string& tenor = kv.first;
-        const string& rateStr = kv.second;
-        double rate = stod(rateStr) / 100.0; // convert from percent to decimal
-        Date tenorDate = valueDate + tenor;  // use your overloaded operator+
-        usdSofr.addRate(tenorDate, rate);
-    }
-    mkt.addCurve("USD-SOFR", usdSofr);
+    mkt.Print(); // print out the market data
 
-    VolCurve stockVol("STOCK-VOL");
-    for (const auto& kv : volPairs) {
-        const string& tenor = kv.first;
-        const string& volStr = kv.second;
-        double vol = stod(volStr) / 100.0; // convert from percent to decimal
-        Date tenorDate = valueDate + tenor;
-        stockVol.addVol(tenorDate, vol);
-    }
-	mkt.addVolCurve("STOCK-VOL", stockVol);
-
-    // Add bond prices to market
-    for (const auto& kv : bondPairs) {
-        const string& bondName = kv.first;
-        const string& priceStr = kv.second;
-        double price = stod(priceStr);
-        mkt.addBondPrice(bondName, price);
-    }
-
-    // Add stock prices to market
-    for (const auto& kv : stockPairs) {
-        const string& stockName = kv.first;
-        const string& priceStr = kv.second;
-        double price = stod(priceStr);
-        mkt.addStockPrice(stockName, price);
-    }
-
-	mkt.Print();		// print out the market data
 
 	//task 2, create a portfolio of bond, swap, european option, american option
 	//for each time, at least should have long / short, different tenor or expiry, different underlying

@@ -1,4 +1,66 @@
 #include "Market.h"
+#include <string>
+#include <vector>
+#include <utility>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+
+// Forward declaration of your helper
+extern std::vector<std::pair<std::string, std::string>> readKeyValueFile(const std::string& fileName);
+
+Market buildMarket(
+    const Date& valueDate,
+    const std::string& curveFile,
+    const std::string& volFile,
+    const std::string& bondFile,
+    const std::string& stockFile
+) {
+    Market mkt(valueDate);
+
+    auto curvePairs = readKeyValueFile(curveFile);
+    auto volPairs = readKeyValueFile(volFile);
+    auto bondPairs = readKeyValueFile(bondFile);
+    auto stockPairs = readKeyValueFile(stockFile);
+
+    RateCurve usdSofr("USD-SOFR");
+    for (const auto& kv : curvePairs) {
+        const std::string& tenor = kv.first;
+        const std::string& rateStr = kv.second;
+        double rate = std::stod(rateStr) / 100.0;
+        Date tenorDate = valueDate + tenor;
+        usdSofr.addRate(tenorDate, rate);
+    }
+    mkt.addCurve("USD-SOFR", usdSofr);
+
+    VolCurve stockVol("STOCK-VOL");
+    for (const auto& kv : volPairs) {
+        const std::string& tenor = kv.first;
+        const std::string& volStr = kv.second;
+        double vol = std::stod(volStr) / 100.0;
+        Date tenorDate = valueDate + tenor;
+        stockVol.addVol(tenorDate, vol);
+    }
+    mkt.addVolCurve("STOCK-VOL", stockVol);
+
+    for (const auto& kv : bondPairs) {
+        const std::string& bondName = kv.first;
+        const std::string& priceStr = kv.second;
+        double price = std::stod(priceStr);
+        mkt.addBondPrice(bondName, price);
+    }
+
+    for (const auto& kv : stockPairs) {
+        const std::string& stockName = kv.first;
+        const std::string& priceStr = kv.second;
+        double price = std::stod(priceStr);
+        mkt.addStockPrice(stockName, price);
+    }
+
+    return mkt;
+}
+
+#include "Market.h"
 
 using namespace std;
 

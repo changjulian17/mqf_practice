@@ -87,4 +87,12 @@ private:
 std::ostream& operator<<(std::ostream& os, const Market& obj);
 std::istream& operator>>(std::istream& is, Market& obj);
 
+Market buildMarket(
+    const Date& valueDate,
+    const std::string& curveFile,
+    const std::string& volFile,
+    const std::string& bondFile,
+    const std::string& stockFile
+);
+
 #endif
