@@ -14,31 +14,6 @@
 
 using namespace std;
 
-vector<pair<string, string>> readKeyValueFile(const string& fileName) {
-    vector<pair<string, string>> result;
-    ifstream file(fileName);
-    string line;
-    while (getline(file, line)) {
-        size_t pos = line.find(':');
-        if (pos == string::npos) continue;
-        string key = line.substr(0, pos);
-        string value = line.substr(pos + 1);
-
-        // Trim leading/trailing whitespace
-        key.erase(0, key.find_first_not_of(" \t\r\n"));
-        key.erase(key.find_last_not_of(" \t\r\n") + 1);
-        value.erase(0, value.find_first_not_of(" \t\r\n"));
-        value.erase(value.find_last_not_of(" \t\r\n") + 1);
-
-        // Remove % and \r
-        value.erase(remove(value.begin(), value.end(), '%'), value.end());
-        value.erase(remove(value.begin(), value.end(), '\r'), value.end());
-
-        result.emplace_back(key, value);
-    }
-    return result;
-}
-
 int main()
 {
 	//task 1, create an market data object, and update the market data from from txt file
@@ -68,9 +43,12 @@ int main()
 	//task 2, create a portfolio of bond, swap, european option, american option
 	//for each time, at least should have long / short, different tenor or expiry, different underlying
 	//totally no less than 16 trades
-	vector<Trade*> myPortfolio;										// deep copy constructor
-	Trade* bond = new Bond("tesst", Date(2023, 12, 31), Date(2024, 1, 1), Date(2034, 1, 1), 10000000, 2, 103.5);
-	myPortfolio.push_back(bond);	
+	vector<Trade*> myPortfolio;										
+	Trade* bond = new Bond("tesst", valueDate, valueDate, valueDate + "2Y", 100'000, 2, 2.5, 101.5);
+	myPortfolio.push_back(bond);
+	
+	Pricer* bondPricer = new BondPricer();
+	double bond_npv = bondPricer->Price(mkt, bond);
 
 
 	//task 3, creat a pricer and price the portfolio, output the pricing result of each deal.

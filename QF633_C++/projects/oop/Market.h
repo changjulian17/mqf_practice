@@ -73,7 +73,7 @@ public:
 	void addBondPrice(const std::string& bondName, double price);//implement this
 	void addStockPrice(const std::string& stockName, double price);//implement this
 
-	inline RateCurve getCurve(const string& name) { return curves[name]; };
+	inline RateCurve getCurve(const string& name) const { return curves.at(name); };
 	inline VolCurve getVolCurve(const string& name) { return vols[name]; };
 
 private:

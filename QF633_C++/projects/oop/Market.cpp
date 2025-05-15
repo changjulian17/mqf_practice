@@ -6,8 +6,32 @@
 #include <fstream>
 #include <algorithm>
 
-// Forward declaration of your helper
-extern std::vector<std::pair<std::string, std::string>> readKeyValueFile(const std::string& fileName);
+using namespace std;
+
+vector<pair<string, string>> readKeyValueFile(const string& fileName) {
+    vector<pair<string, string>> result;
+    ifstream file(fileName);
+    string line;
+    while (getline(file, line)) {
+        size_t pos = line.find(':');
+        if (pos == string::npos) continue;
+        string key = line.substr(0, pos);
+        string value = line.substr(pos + 1);
+
+        // Trim leading/trailing whitespace
+        key.erase(0, key.find_first_not_of(" \t\r\n"));
+        key.erase(key.find_last_not_of(" \t\r\n") + 1);
+        value.erase(0, value.find_first_not_of(" \t\r\n"));
+        value.erase(value.find_last_not_of(" \t\r\n") + 1);
+
+        // Remove % and \r
+        value.erase(remove(value.begin(), value.end(), '%'), value.end());
+        value.erase(remove(value.begin(), value.end(), '\r'), value.end());
+
+        result.emplace_back(key, value);
+    }
+    return result;
+}
 
 Market buildMarket(
     const Date& valueDate,

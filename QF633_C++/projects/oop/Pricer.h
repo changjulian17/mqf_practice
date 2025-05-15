@@ -7,6 +7,7 @@
 #include "Trade.h"
 #include "TreeProduct.h"
 #include "Market.h"
+#include "Bond.h"
 
 // pricer interface
 class Pricer {
@@ -15,6 +16,20 @@ public:
 
 private:
 	virtual double PriceTree(const Market& mkt, const TreeProduct& trade) { return 0; };
+};
+
+// BondPricer implementation
+class BondPricer : public Pricer {
+public:
+    double Price(const Market& mkt, Trade* trade) override {
+        Bond* bond = dynamic_cast<Bond*>(trade);
+        if (!bond) return 0.0;
+
+        // Example: Use the 2Y rate from the curve for discounting
+        RateCurve curve = mkt.getCurve("USD-SOFR");
+
+        return bond->Payoff(curve); // Assumes Payoff(double discountRate)
+    }
 };
 
 class BinomialTreePricer : public Pricer
