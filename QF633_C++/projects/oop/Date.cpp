@@ -35,7 +35,7 @@ Date operator+(const Date& base, const std::string& tenor) {
 
 std::ostream& operator<<(std::ostream& os, const Date& d)
 {
-	os << d.year << "-" << d.month << "-" << d.day << std::endl;
+	os << d.year << "-" << d.month << "-" << d.day;
 	return os;
 }
 
