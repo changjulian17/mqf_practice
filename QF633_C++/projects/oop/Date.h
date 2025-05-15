@@ -13,10 +13,14 @@ public:
 	Date() {
 		std::cout << "default Date constructor called" << std::endl;
 	};
+
+	static Date addTenor(const Date& base, const std::string& tenor); // Add this line
 };
 
 double operator-(const Date& d1, const Date& d2);
 std::ostream& operator<<(std::ostream& os, const Date& date); 		// when overloading "<<" here is referring only to the ostream one"
 std::istream& operator>>(std::istream& is, Date& date);
+
+Date operator+(const Date& base, const std::string& tenor);
 
 #endif

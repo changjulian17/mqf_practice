@@ -1,6 +1,9 @@
 #include <fstream>
 #include <ctime>
 #include <chrono>
+#include <vector>
+#include <utility>
+#include <string>
 
 #include "Market.h"
 #include "Pricer.h"
@@ -11,13 +14,29 @@
 
 using namespace std;
 
-void readFromFile(const string& fileName, string& outPut) {
-	string lineText;
-	ifstream MyReadFile(fileName);
-	while (getline(MyReadFile, lineText)) {
-		outPut.append(lineText);
-	}
-	MyReadFile.close();
+vector<pair<string, string>> readKeyValueFile(const string& fileName) {
+    vector<pair<string, string>> result;
+    ifstream file(fileName);
+    string line;
+    while (getline(file, line)) {
+        size_t pos = line.find(':');
+        if (pos == string::npos) continue;
+        string key = line.substr(0, pos);
+        string value = line.substr(pos + 1);
+
+        // Trim leading/trailing whitespace
+        key.erase(0, key.find_first_not_of(" \t\r\n"));
+        key.erase(key.find_last_not_of(" \t\r\n") + 1);
+        value.erase(0, value.find_first_not_of(" \t\r\n"));
+        value.erase(value.find_last_not_of(" \t\r\n") + 1);
+
+        // Remove % and \r
+        value.erase(remove(value.begin(), value.end(), '%'), value.end());
+        value.erase(remove(value.begin(), value.end(), '\r'), value.end());
+
+        result.emplace_back(key, value);
+    }
+    return result;
 }
 
 int main()
@@ -38,27 +57,31 @@ int main()
 	//cout << newDate;
 	
 
-	Market mkt0;
-	Market mkt1 = Market(valueDate);		// deep copy constructor
-	Market mkt2(mkt1);
-	Market mkt3;	
-	mkt3 = mkt2; //assignemnt constructor	
+	Market mkt;
 
 	/*
 	load data from file and update market object with data
 	*/
 	string curveFile = "curve.txt";
 	string volFile = "vol.txt";	
-	string bondFile = "bond.txt";
-	string stockFile = "stock.txt";
+	string bondFile = "bondPrice.txt";
+	string stockFile = "stockPrice.txt";
 	string curveData;
 	string volData;	
 	string bondData;
 	string stockData;
-	readFromFile(curveFile, curveData);
-	readFromFile(volFile, volData);
-	readFromFile(bondFile, bondData);
-	readFromFile(stockFile, stockData);
+
+	auto curvePairs = readKeyValueFile(curveFile);
+	auto volPairs = readKeyValueFile(volFile);
+	auto bondPairs = readKeyValueFile(bondFile);
+	auto stockPairs = readKeyValueFile(stockFile);
+
+	// readFromFile(volFile, volData);
+	// readFromFile(bondFile, bondData);
+	// readFromFile(stockFile, stockData);
+
+	RateCurve usdSofr("USD-SOFR");
+	// ifstream curveStream(curveFile);
 
 	//task 2, create a portfolio of bond, swap, european option, american option
 	//for each time, at least should have long / short, different tenor or expiry, different underlying
@@ -71,7 +94,7 @@ int main()
 	//task 3, creat a pricer and price the portfolio, output the pricing result of each deal.
 	Pricer* treePricer = new CRRBinomialTreePricer(10);
 	for (auto trade : myPortfolio) {
-		double pv = treePricer->Price(mkt1, trade);
+		double pv = treePricer->Price(mkt, trade);
 		//log pv details out in a file
 
 	}
