@@ -76,10 +76,6 @@ int main()
 	auto bondPairs = readKeyValueFile(bondFile);
 	auto stockPairs = readKeyValueFile(stockFile);
 
-	// readFromFile(volFile, volData);
-	// readFromFile(bondFile, bondData);
-	// readFromFile(stockFile, stockData);
-
 	RateCurve usdSofr("USD-SOFR");
 	// ifstream curveStream(curveFile);
 
