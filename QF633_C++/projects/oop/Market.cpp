@@ -111,6 +111,34 @@ void RateCurve::addRate(Date tenor, double rate)
 double RateCurve::getRate(Date tenor) const
 {
   // use linear interpolation to get rate
+  if (tenorDates.empty())
+    return 0.0;
+
+  // Exact match
+  for (size_t i = 0; i < tenorDates.size(); ++i) {
+    if (tenorDates[i] == tenor)
+      return rates[i];
+  }
+
+  // If before first tenor, return first rate
+  if (tenor < tenorDates.front())
+    return rates.front();
+
+  // If after last tenor, return last rate
+  if (tenor > tenorDates.back())
+    return rates.back();
+
+  // Linear interpolation between two tenors
+  for (size_t i = 1; i < tenorDates.size(); ++i) {
+    if (tenor < tenorDates[i]) {
+      double t1 = tenorDates[i-1].toDouble();
+      double t2 = tenorDates[i].toDouble();
+      double r1 = rates[i-1];
+      double r2 = rates[i];
+      double t = tenor.toDouble();
+      return r1 + (r2 - r1) * (t - t1) / (t2 - t1);
+    }
+  }
   return 0;
 }
 

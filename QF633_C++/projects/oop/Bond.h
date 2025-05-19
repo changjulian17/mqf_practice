@@ -24,7 +24,32 @@ public:
 
     double Payoff(const RateCurve& curve) const
 	{
-		return 50.0; // TODO implement discounting cashflow
+        double npv = 0.0;
+        // Estimate number of periods (assumes full years, adjust if needed)
+        int nPeriods = frequency * (endDate.year - startDate.year);
+        double periodCoupon = bondNotional * (couponRate / 100.0) / frequency;
+
+        for (int i = 1; i <= nPeriods; ++i) {
+            // Estimate payment date (very basic, assumes equal spacing)
+            Date payDate = startDate;
+            payDate.year += (i - 1) / frequency;
+            payDate.month += (12 / frequency) * ((i - 1) % frequency);
+            if (payDate.month > 12) {
+                payDate.year += (payDate.month - 1) / 12;
+                payDate.month = ((payDate.month - 1) % 12) + 1;
+            }
+            double t = payDate.toDouble() - startDate.toDouble();
+            double rate = curve.getRate(payDate);
+            double discount = 1.0 / pow(1.0 + rate / frequency, i);
+            npv += periodCoupon * discount;
+        }
+        // Add principal repayment at maturity
+        double tMat = endDate.toDouble() - startDate.toDouble();
+        double rateMat = curve.getRate(endDate);
+        double discountMat = 1.0 / pow(1.0 + rateMat / frequency, nPeriods);
+        npv += bondNotional * discountMat;
+
+        return npv;
 	};
 
 private:

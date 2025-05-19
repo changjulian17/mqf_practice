@@ -44,3 +44,24 @@ std::istream& operator>>(std::istream& is, Date& d)
 	is >> d.year >> d.month >> d.day;
 	return is;
 }
+
+double Date::toDouble() const {
+    // Simple conversion: year + (month-1)/12 + (day-1)/365
+    return year + (month - 1) / 12.0 + (day - 1) / 365.0;
+}
+
+bool Date::operator==(const Date& other) const {
+    return year == other.year && month == other.month && day == other.day;
+}
+
+bool Date::operator<(const Date& other) const {
+    if (year != other.year) return year < other.year;
+    if (month != other.month) return month < other.month;
+    return day < other.day;
+}
+
+bool Date::operator>(const Date& other) const {
+    if (year != other.year) return year > other.year;
+    if (month != other.month) return month > other.month;
+    return day > other.day;
+}

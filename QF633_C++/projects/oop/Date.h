@@ -15,9 +15,17 @@ public:
 	};
 
 	static Date addTenor(const Date& base, const std::string& tenor); // Add this line
+
+	// Convert date to fractional year (e.g., 2025.375 for May 2025)
+	double toDouble() const;
+
+	bool operator==(const Date& other) const;
+	bool operator<(const Date& other) const;
+	bool operator>(const Date& other) const;
 };
 
 double operator-(const Date& d1, const Date& d2);
+
 std::ostream& operator<<(std::ostream& os, const Date& date); 		// when overloading "<<" here is referring only to the ostream one"
 std::istream& operator>>(std::istream& is, Date& date);
 
