@@ -8,6 +8,7 @@
 #include "TreeProduct.h"
 #include "Market.h"
 #include "Bond.h"
+#include "Swap.h"
 
 // pricer interface
 class Pricer {
@@ -29,6 +30,20 @@ public:
         RateCurve curve = mkt.getCurve("USD-SOFR");
 
         return bond->Payoff(curve); // Assumes Payoff(double discountRate)
+    }
+};
+
+// SwapPricer implementation
+class SwapPricer : public Pricer {
+public:
+    double Price(const Market& mkt, Trade* trade) override {
+        Swap* swap = dynamic_cast<Swap*>(trade);
+        if (!swap) return 0.0;
+
+        // Use the curve from the market
+        RateCurve curve = mkt.getCurve("USD-SOFR");
+
+        return swap->Payoff(curve);
     }
 };
 

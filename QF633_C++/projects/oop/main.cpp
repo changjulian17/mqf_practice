@@ -44,14 +44,19 @@ int main()
 	//for each time, at least should have long / short, different tenor or expiry, different underlying
 	//totally no less than 16 trades
 	vector<Trade*> myPortfolio;										
-	Trade* bond = new Bond("tesst", valueDate, valueDate, valueDate + "2Y", 100'000, 2, 2.5, 101.5);
+	Trade* bond = new Bond("SGD-MAS-BILL", valueDate, valueDate, valueDate + "2Y", 100'000, 2, 2.5, 101.5);
 	myPortfolio.push_back(bond);
-	
+
+	Trade* swap = new Swap(valueDate, valueDate, valueDate + "5Y", 1'000'000, 0.045, 2);
+	myPortfolio.push_back(swap);
+
+
+	//task 3, create a pricer and price the portfolio, output the pricing result of each deal.
 	Pricer* bondPricer = new BondPricer();
 	double bond_npv = bondPricer->Price(mkt, bond);
+	Pricer* swapPricer = new SwapPricer();
+	double swap_npv = swapPricer->Price(mkt, swap);	
 
-
-	//task 3, creat a pricer and price the portfolio, output the pricing result of each deal.
 	Pricer* treePricer = new CRRBinomialTreePricer(10);
 	for (auto trade : myPortfolio) {
 		double pv = treePricer->Price(mkt, trade);

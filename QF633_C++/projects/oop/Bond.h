@@ -40,13 +40,13 @@ public:
             }
             double t = payDate.toDouble() - startDate.toDouble();
             double rate = curve.getRate(payDate);
-            double discount = 1.0 / pow(1.0 + rate / frequency, i);
+            double discount = exp(-rate * t); // continuous discounting
             npv += periodCoupon * discount;
         }
         // Add principal repayment at maturity
         double tMat = endDate.toDouble() - startDate.toDouble();
         double rateMat = curve.getRate(endDate);
-        double discountMat = 1.0 / pow(1.0 + rateMat / frequency, nPeriods);
+        double discountMat = exp(-rateMat * tMat); // continuous discounting
         npv += bondNotional * discountMat;
 
         return npv;
