@@ -221,3 +221,32 @@ std::istream &operator>>(std::istream &is, Market &mkt)
   is >> mkt.asOf;
   return is;
 }
+
+double RateCurve::getMarketSwapRate(Date startDate, Date endDate, int frequency) const
+{
+    int nPeriods = frequency * (endDate.year - startDate.year);
+    double dt = 1.0 / frequency;
+    double denom = 0.0;
+    Date payDate = startDate;
+
+    for (int i = 1; i <= nPeriods; ++i) {
+        // Advance payDate by (12/frequency) months each period
+        int monthsToAdd = (12 / frequency) * i;
+        Date thisPayDate = payDate;
+        thisPayDate.month += monthsToAdd;
+        while (thisPayDate.month > 12) {
+            thisPayDate.year += 1;
+            thisPayDate.month -= 12;
+        }
+        double t = thisPayDate.toDouble() - startDate.toDouble();
+        double z = getRate(thisPayDate);
+        double df = exp(-z * t);
+        denom += dt * df;
+    }
+
+    double T = endDate.toDouble() - startDate.toDouble();
+    double zT = getRate(endDate);
+    double df_T = exp(-zT * T);
+
+    return (1.0 - df_T) / denom;
+}
