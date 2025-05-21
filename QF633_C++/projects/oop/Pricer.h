@@ -75,6 +75,12 @@ class CRRBinomialTreePricer : public BinomialTreePricer // realistic implementat
 public:
 	CRRBinomialTreePricer(int N) : BinomialTreePricer(N) {}
 
+    double Price(const Market& mkt, Trade* trade) override {
+        TreeProduct* treeProduct = dynamic_cast<TreeProduct*>(trade);
+        if (!treeProduct) return 0.0;
+        return PriceTree(mkt, *treeProduct);
+    }
+
 protected:
 	void ModelSetup(double S0, double sigma, double rate, double dt) override;
 	double GetSpot(int ti, int si) const override {

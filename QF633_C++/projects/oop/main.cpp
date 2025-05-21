@@ -48,21 +48,27 @@ int main()
 	myPortfolio.push_back(bond);
 	Trade* swap = new Swap(valueDate, valueDate + "1Y", valueDate + "5Y", 1'000'000, 0.045, 2);
 	myPortfolio.push_back(swap);
-	Trade* euroCall = new EuropeanOption(OptionType::Call, 100, valueDate + "6M");
+	Trade* euroCall = new EuropeanOption("AAPL", OptionType::Call, 1.05, valueDate + "6M");
 	myPortfolio.push_back(euroCall);
 
 
 	//task 3, create a pricer and price the portfolio, output the pricing result of each deal.
-	Pricer* bondPricer = new BondPricer();
-	double bond_npv = bondPricer->Price(mkt, bond);
-	Pricer* swapPricer = new SwapPricer();
-	double swap_npv = swapPricer->Price(mkt, swap);	
-
-	Pricer* treePricer = new CRRBinomialTreePricer(10);
 	for (auto trade : myPortfolio) {
-		double pv = treePricer->Price(mkt, trade);
-		//log pv details out in a file
+		Pricer* pricer = nullptr;
 
+		if (dynamic_cast<Bond*>(trade)) {
+			pricer = new BondPricer();
+		} else if (dynamic_cast<Swap*>(trade)) {
+			pricer = new SwapPricer();
+		} else if (dynamic_cast<EuropeanOption*>(trade) || dynamic_cast<AmericanOption*>(trade)) {
+			pricer = new CRRBinomialTreePricer(10);
+		}
+
+		if (pricer) {
+			double pv = pricer->Price(mkt, trade);
+			// log pv details out in a file
+			delete pricer;
+		}
 	}
 
 	//task 4, analyzing pricing result
