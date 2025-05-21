@@ -46,9 +46,10 @@ int main()
 	vector<Trade*> myPortfolio;										
 	Trade* bond = new Bond("SGD-MAS-BILL", valueDate, valueDate, valueDate + "2Y", 100'000, 2, 2.5, 101.5);
 	myPortfolio.push_back(bond);
-
-	Trade* swap = new Swap(valueDate, valueDate, valueDate + "5Y", 1'000'000, 0.045, 2);
+	Trade* swap = new Swap(valueDate, valueDate + "1Y", valueDate + "5Y", 1'000'000, 0.045, 2);
 	myPortfolio.push_back(swap);
+	Trade* euroCall = new EuropeanOption(OptionType::Call, 100, valueDate + "6M");
+	myPortfolio.push_back(euroCall);
 
 
 	//task 3, create a pricer and price the portfolio, output the pricing result of each deal.

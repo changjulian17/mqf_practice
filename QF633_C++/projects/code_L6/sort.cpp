@@ -61,16 +61,16 @@ int main()
         cout<<endl;
 
         //sort(mylist.begin(), mylist.end(), is_greater<People>());
-        sort(mylist.begin(), mylist.end(), [&] () {
-            bool is_greater;
-            {
+        // sort(mylist.begin(), mylist.end(), [&] () { //lambda function to sort by name
+        //     bool is_greater;
+        //     {
 
 
 
-            }
+        //     }
 
 
-        });
+        // });
 	    
 	    cout << "Array after sorting : \n";
 	    for (int i = 0; i < mylist.size(); ++i)

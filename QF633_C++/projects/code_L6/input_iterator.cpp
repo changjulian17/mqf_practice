@@ -28,7 +28,7 @@ void input_iterator_conceptual_swap(InputIterator1 it1, InputIterator2 it2)
 int main()
 {
 	// example 1: using input iterator
-	if (false)
+	if (true)
 	{
 		vector<int> v = {1, 2, 3};
 
@@ -53,7 +53,7 @@ int main()
 	}
 	
 	// example 2, dynamically add or delete from container
-	if (0)
+	if (true)
 	{
 		std::vector<int> numbers = {1, 2, 3, 4, 5, 6};
 
@@ -70,11 +70,10 @@ int main()
 		}
 		std::cout << std::endl; // Output: Odd numbers after 'deletion': 1 3 5
 
-		return 0;
 	}
 
 	//example 3, swap item
-	if (0)
+	if (true)
 	{
 		std::vector<int> vec1 = {10};
 		std::vector<int> vec2 = {20};

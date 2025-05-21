@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -224,29 +225,34 @@ std::istream &operator>>(std::istream &is, Market &mkt)
 
 double RateCurve::getMarketSwapRate(Date startDate, Date endDate, int frequency) const
 {
-    int nPeriods = frequency * (endDate.year - startDate.year);
+    double years = endDate.toDouble() - startDate.toDouble();
+    int nPeriods = static_cast<int>(round(frequency * years));
     double dt = 1.0 / frequency;
     double denom = 0.0;
-    Date payDate = startDate;
 
     for (int i = 1; i <= nPeriods; ++i) {
-        // Advance payDate by (12/frequency) months each period
+        // Compute payDate = startDate + i * (12 / frequency) months
         int monthsToAdd = (12 / frequency) * i;
-        Date thisPayDate = payDate;
-        thisPayDate.month += monthsToAdd;
-        while (thisPayDate.month > 12) {
-            thisPayDate.year += 1;
-            thisPayDate.month -= 12;
+        Date payDate = startDate;
+        payDate.month += monthsToAdd;
+        while (payDate.month > 12) {
+            payDate.year += 1;
+            payDate.month -= 12;
         }
-        double t = thisPayDate.toDouble() - startDate.toDouble();
-        double z = getRate(thisPayDate);
+
+        double t = payDate.toDouble() - startDate.toDouble();
+        double z = getRate(payDate);
         double df = exp(-z * t);
         denom += dt * df;
     }
 
-    double T = endDate.toDouble() - startDate.toDouble();
-    double zT = getRate(endDate);
-    double df_T = exp(-zT * T);
+    // Compute D(start) and D(end)
+    double tStart = startDate.toDouble() - startDate.toDouble(); // = 0
+    double tEnd = endDate.toDouble() - startDate.toDouble();
+    double zStart = getRate(startDate);
+    double zEnd = getRate(endDate);
+    double dfStart = exp(-zStart * tStart); // = 1
+    double dfEnd = exp(-zEnd * tEnd);
 
-    return (1.0 - df_T) / denom;
+    return (dfStart - dfEnd) / denom;
 }

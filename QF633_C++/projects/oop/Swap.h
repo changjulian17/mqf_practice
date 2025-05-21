@@ -22,7 +22,8 @@ public:
 
 	// Now Payoff takes a RateCurve
 	double Payoff(const RateCurve& curve) const
-	{
+	{	// TODO add all to one payoff function
+		// TODO need to add forward starting implementation
 
 		/*
 		Implement this, using npv = annuity * (traded rate - market swap rate);
@@ -32,13 +33,30 @@ public:
 		Df = exp(-zT), z is the zero coupon rate;
 		*/
 
-		auto result = getAnnuityAndSumRates(curve);
-		double annuity = result.first;
-		double sumRates = result.second;
-		int nPeriods = frequency * (endDate.year - startDate.year);
+		double annuity = 0.0;
+		double sumRates = 0.0;
+		double sumFwdRates = 0.0;
+		double years = endDate.toDouble() - startDate.toDouble();
+		int nPeriods = static_cast<int>(round(frequency * years));
+		double dt = 1.0 / frequency;
 
-		// Multiply tradeRate by nPeriods as requested
-		return annuity * (sumRates - tradeRate * nPeriods);
+		for (int i = 1; i <= nPeriods; ++i) {
+			double t = i * dt;
+			// Compute payDate as startDate + t years (or months)
+			Date payDate = startDate;
+			int monthsToAdd = static_cast<int>(round(12 * t));
+			payDate.month += monthsToAdd;
+			while (payDate.month > 12) {
+				payDate.year += 1;
+				payDate.month -= 12;
+			}
+			double z1 = curve.getRate(payDate);
+			double df = exp(-z1 * t);
+			annuity += swapNotional * dt * df;
+		}
+
+		double marketSwapRate = curve.getMarketSwapRate(startDate, endDate, frequency);  
+		return annuity * (tradeRate - marketSwapRate);
 	}
 
 private:

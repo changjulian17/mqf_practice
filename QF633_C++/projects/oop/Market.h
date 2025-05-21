@@ -14,6 +14,7 @@ public:
 	RateCurve(const string& _name) : name(_name) {};
 	void addRate(Date tenor, double rate);
 	double getRate(Date tenor) const; //implement this function using linear interpolation
+	double getMarketSwapRate(Date startDate, Date endDate, int frequency) const;
 	void display() const;
 
 private:

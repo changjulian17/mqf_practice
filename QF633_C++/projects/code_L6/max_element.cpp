@@ -31,7 +31,7 @@ ostream& operator<<(ostream& os, const People& obj) {
 int main()
 {
 	// Get the vector
-	vector<int> a = { 1, 45, 54, 71, 76, 12 };
+	vector<int> a = { 1, 45, 54, 71, 76, 12, 12 };
 
 	// Print the vector
 	cout << "Vector: ";
@@ -53,7 +53,7 @@ int main()
 
     if (false) {
         // find max element using user defined function 
-        int v[] = { 9, 4, 7, 2, 5, 10, 11, 12, 1, 3, 6 }; 
+        int v[] = { 9, 4, 7, 2, 5, 10, 11, 12, 1, 3, 6, 6 }; 
 
         // Finding the maximum value between the third and the ninth element 
         int* i1; 
@@ -66,7 +66,7 @@ int main()
     if (true) {
         // find max element for class object, using lambda function comparator
         People p1 = People(20, 180, "tom");
-        People p2 = People(23, 173, "mike");
+        People p2 = People(23, 168, "mike");
         People p3 = {18, 168, "alice"};
         std::vector<People> MySuperVector = {p1,p2,p3};
         auto max = std::max_element( MySuperVector.begin(), MySuperVector.end(),
