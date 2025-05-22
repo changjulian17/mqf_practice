@@ -11,8 +11,8 @@ Start: 2026-5-22, End: 2030-5-22
 Fixed Rate: 0.0450
 -----------------------------
 Trade Type: EuropeanOption
-PV: nan
-Option Ticker: AAPL
-Strike: 1.0500
+PV: 30.4614
+Option Ticker: APPL
+Strike: 684.6000
 Expiry: 2025-11-22
 -----------------------------

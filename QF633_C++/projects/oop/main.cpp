@@ -51,12 +51,12 @@ int main()
 	myPortfolio.push_back(bond);
 	Trade* swap = new Swap(valueDate, valueDate + "1Y", valueDate + "5Y", 1'000'000, 0.045, 2);
 	myPortfolio.push_back(swap);
-	Trade* euroCall = new EuropeanOption("AAPL", OptionType::Call, 1.05, valueDate + "6M");
+	Trade* euroCall = new EuropeanOption("APPL", OptionType::Call, 1.05 * 652 , valueDate + "6M");
 	myPortfolio.push_back(euroCall);
 
 
 	//task 3, create a pricer and price the portfolio, output the pricing result of each deal.
-	std::ofstream out("portfolio_valuation.txt");
+	std::ofstream out("zz_portfolio_valuation.txt");
     out << std::fixed << std::setprecision(4);
 
     for (auto trade : myPortfolio) {
@@ -101,6 +101,11 @@ int main()
 	//task 4, analyzing pricing result
 	// a) compare CRR binomial tree result for an european option vs Black model
 	// b) compare CRR binomial tree result for an american option call vs european option call, and put
+
+	for (auto trade : myPortfolio) {
+		delete trade;
+	}
+	myPortfolio.clear();
 
 	//final
 	cout << "Project build successfully!" << endl;

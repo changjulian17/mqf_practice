@@ -1,5 +1,7 @@
 #include <cmath>
 #include "Pricer.h"
+#include "EuropeanTrade.h"
+#include "AmericanTrade.h"
 
 
 double Pricer::Price(const Market& mkt, Trade* trade) {
@@ -27,13 +29,27 @@ void BinomialTreePricer::ModelSetup(double S0, double sigma, double r, double dt
 }
 
 double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade) {
-	// model setup
-	double T = trade.GetExpiry() - mkt.asOf;		// need to ensure overload operator - for Date
+	double T = trade.GetExpiry() - mkt.asOf;
 	double dt = T / nTimeSteps;
 	double stockPrice = 0, vol = 0, rate = 0;
-	/*
-	get these data for the deal from market object
-	*/
+	std::string ticker;
+
+	// Try to get ticker and other info from EuropeanOption
+	if (auto euro = dynamic_cast<const EuropeanOption*>(&trade)) {
+		ticker = euro->getTickerName();
+	}
+	// Try to get ticker and other info from AmericanOption
+	else if (auto amer = dynamic_cast<const AmericanOption*>(&trade)) {
+		ticker = amer->getTickerName();
+	}
+
+	// Now fill market data if ticker is available
+	if (!ticker.empty()) {
+		stockPrice = mkt.getStockPrice();
+		vol = mkt.getVolCurve().getVol(trade.GetExpiry());
+		rate = mkt.getCurve().getRate(trade.GetExpiry());
+	}
+
 	ModelSetup(stockPrice, vol, rate, dt);
 
 	// initialize
@@ -42,15 +58,13 @@ double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade
 	}
 
 	// price by backward induction
-	for (int k = nTimeSteps - 1; k >= 0; k--)
+	for (int k = nTimeSteps - 1; k >= 0; k--){
 		for (int i = 0; i <= k; i++) {
-			// calculate continuation value
 			double df = exp(-rate * dt);
 			double continuation = df * (states[i] * GetProbUp() + states[i + 1] * GetProbDown());
-			// calculate the option value at node(k, i)
 			states[i] = trade.ValueAtNode(GetSpot(k, i), dt * k, continuation);
-		}
-
+		}	
+	}
 	return states[0];
 
 }

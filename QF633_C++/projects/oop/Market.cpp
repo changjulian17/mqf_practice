@@ -151,10 +151,35 @@ void VolCurve::addVol(Date tenor, double rate)
 
 double VolCurve::getVol(Date tenor) const
 {
-  // TODO: implement interpolation if needed
-  if (tenors.empty())
-    return 0.0;
-  return vols.back();
+    if (tenors.empty()) { return 0.0;}
+
+    // Exact match
+    for (size_t i = 0; i < tenors.size(); ++i) {
+        if (tenors[i] == tenor){
+            cout << "Exact match vol for tenor " << tenors[i] << ": " << vols[i] << endl;
+            return vols[i];}
+    }
+
+    // If before first tenor, return first vol
+    if (tenor < tenors.front()){
+        return vols.front();}
+
+    // If after last tenor, return last vol
+    if (tenor > tenors.back()){
+        return vols.back();}
+
+    // Linear interpolation between two tenors
+    for (size_t i = 1; i < tenors.size(); ++i) {
+        if (tenor < tenors[i]) {
+            double t1 = tenors[i-1].toDouble();
+            double t2 = tenors[i].toDouble();
+            double v1 = vols[i-1];
+            double v2 = vols[i];
+            double t = tenor.toDouble();
+            return v1 + (v2 - v1) * (t - t1) / (t2 - t1);
+        }
+    }
+    return 0.0; // fallback, should not reach here
 }
 
 void VolCurve::display() const
