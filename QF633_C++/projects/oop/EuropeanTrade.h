@@ -16,6 +16,10 @@ public:
 	virtual const Date& GetExpiry() const { return expiryDate; }
 	virtual double ValueAtNode(double S, double t, double continuation) const { return continuation; }
 
+	std::string getTickerName() const { return ticker_name; }
+	double getStrike() const { return strike; }
+	Date getExpiry() const { return expiryDate; }
+
 protected:
 	std::string ticker_name;
 	OptionType optType;

@@ -1,0 +1,18 @@
+Trade Type: Bond
+PV: 94671.8257
+Bond Name: SGD-MAS-BILL
+Maturity: 2027-5-22
+Coupon: 2.5000
+-----------------------------
+Trade Type: Swap
+PV: -11889.1069
+Swap Notional: 1000000.0000
+Start: 2026-5-22, End: 2030-5-22
+Fixed Rate: 0.0450
+-----------------------------
+Trade Type: EuropeanOption
+PV: nan
+Option Ticker: AAPL
+Strike: 1.0500
+Expiry: 2025-11-22
+-----------------------------

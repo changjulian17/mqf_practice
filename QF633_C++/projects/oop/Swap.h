@@ -14,6 +14,11 @@ public:
 		*/
 	}
 
+	double getNotional() const { return swapNotional; }
+	Date getStartDate() const { return startDate; }
+	Date getEndDate() const { return endDate; }
+	double getFixedRate() const { return tradeRate; }
+
 	// Now Payoff takes a RateCurve
 	double Payoff(double marketRate) const
 	{
@@ -22,17 +27,7 @@ public:
 
 	// Now Payoff takes a RateCurve
 	double Payoff(const RateCurve& curve) const
-	{	// TODO add all to one payoff function
-		// TODO need to add forward starting implementation
-
-		/*
-		Implement this, using npv = annuity * (traded rate - market swap rate);
-		trade rate is "rate"
-		market swap rate is "marketRate" in curve.txt
-		Annuity = sum of (notional * year fraction of each coupon period * Discount factor at each period end);
-		Df = exp(-zT), z is the zero coupon rate;
-		*/
-
+	{	
 		double annuity = 0.0;
 		double sumRates = 0.0;
 		double sumFwdRates = 0.0;

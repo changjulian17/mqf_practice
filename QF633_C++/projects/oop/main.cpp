@@ -4,6 +4,9 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <iomanip>
+#include <algorithm>
+#include <cctype>
 
 #include "Market.h"
 #include "Pricer.h"
@@ -53,23 +56,47 @@ int main()
 
 
 	//task 3, create a pricer and price the portfolio, output the pricing result of each deal.
-	for (auto trade : myPortfolio) {
-		Pricer* pricer = nullptr;
+	std::ofstream out("portfolio_valuation.txt");
+    out << std::fixed << std::setprecision(4);
 
-		if (dynamic_cast<Bond*>(trade)) {
-			pricer = new BondPricer();
-		} else if (dynamic_cast<Swap*>(trade)) {
-			pricer = new SwapPricer();
-		} else if (dynamic_cast<EuropeanOption*>(trade) || dynamic_cast<AmericanOption*>(trade)) {
-			pricer = new CRRBinomialTreePricer(10);
-		}
+    for (auto trade : myPortfolio) {
+        Pricer* pricer = nullptr;
 
-		if (pricer) {
-			double pv = pricer->Price(mkt, trade);
-			// log pv details out in a file
-			delete pricer;
-		}
-	}
+        if (dynamic_cast<Bond*>(trade)) {
+            pricer = new BondPricer();
+        } else if (dynamic_cast<Swap*>(trade)) {
+            pricer = new SwapPricer();
+        } else if (dynamic_cast<EuropeanOption*>(trade) || dynamic_cast<AmericanOption*>(trade)) {
+            pricer = new CRRBinomialTreePricer(10);
+        }
+
+        if (pricer) {
+            double pv = pricer->Price(mkt, trade);
+
+            std::string typeName = typeid(*trade).name();
+            typeName.erase(std::remove_if(typeName.begin(), typeName.end(), ::isdigit), typeName.end());
+            out << "Trade Type: " << typeName << "\n";
+            out << "PV: " << pv << "\n";
+
+            if (auto bond = dynamic_cast<Bond*>(trade)) {
+                out << "Bond Name: " << bond->getName() << "\n";
+                out << "Maturity: " << bond->getMaturity() << "\n";
+                out << "Coupon: " << bond->getCouponRate() << "\n";
+            } else if (auto swap = dynamic_cast<Swap*>(trade)) {
+                out << "Swap Notional: " << swap->getNotional() << "\n";
+                out << "Start: " << swap->getStartDate() << ", End: " << swap->getEndDate() << "\n";
+                out << "Fixed Rate: " << swap->getFixedRate() << "\n";
+            } else if (auto euro = dynamic_cast<EuropeanOption*>(trade)) {
+                out << "Option Ticker: " << euro->getTickerName() << "\n";
+                out << "Strike: " << euro->getStrike() << "\n";
+                out << "Expiry: " << euro->getExpiry() << "\n";
+            }
+            out << "-----------------------------\n";
+
+            delete pricer;
+        }
+    }
+    out.close();
 
 	//task 4, analyzing pricing result
 	// a) compare CRR binomial tree result for an european option vs Black model

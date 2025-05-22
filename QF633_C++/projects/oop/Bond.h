@@ -17,6 +17,12 @@ public:
         tradePrice = price;
     }
 
+    std::string getName() const { return bondName; }
+    double getNotional() const { return bondNotional; }
+    Date getMaturity() const { return endDate; }
+    double getCouponRate() const { return couponRate; }
+    int getFrequency() const { return frequency; }
+
     inline double Payoff(double marketPrice) const override
     { 
         return (marketPrice - tradePrice) * bondNotional;
