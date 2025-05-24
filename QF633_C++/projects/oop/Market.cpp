@@ -156,7 +156,6 @@ double VolCurve::getVol(Date tenor) const
     // Exact match
     for (size_t i = 0; i < tenors.size(); ++i) {
         if (tenors[i] == tenor){
-            cout << "Exact match vol for tenor " << tenors[i] << ": " << vols[i] << endl;
             return vols[i];}
     }
 
