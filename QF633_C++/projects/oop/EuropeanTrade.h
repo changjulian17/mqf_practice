@@ -19,6 +19,7 @@ public:
 	std::string getTickerName() const { return ticker_name; }
 	double getStrike() const { return strike; }
 	Date getExpiry() const { return expiryDate; }
+	OptionType getOptionType() const { return optType; }
 
 protected:
 	std::string ticker_name;

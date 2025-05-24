@@ -9,6 +9,7 @@
 
 using namespace std;
 
+// --- Utility Functions ---
 vector<pair<string, string>> readKeyValueFile(const string& fileName) {
     vector<pair<string, string>> result;
     ifstream file(fileName);
@@ -85,28 +86,11 @@ Market buildMarket(
     return mkt;
 }
 
-#include "Market.h"
-
-using namespace std;
-
-void RateCurve::display() const
-{
-  cout << "rate curve:" << name << endl;
-  for (size_t i = 0; i < tenorDates.size(); i++)
-  {
-    cout << tenorDates[i] << ":" << rates[i] << endl;
-  }
-  cout << endl;
-}
-
+// --- RateCurve Implementation ---
 void RateCurve::addRate(Date tenor, double rate)
 {
-  // consider to check if tenor already exist
-  if (true)
-  {
-    tenorDates.push_back(tenor);
-    rates.push_back(rate);
-  }
+  tenorDates.push_back(tenor);
+  rates.push_back(rate);
 }
 
 double RateCurve::getRate(Date tenor) const
@@ -143,6 +127,51 @@ double RateCurve::getRate(Date tenor) const
   return 0;
 }
 
+double RateCurve::getMarketSwapRate(Date startDate, Date endDate, int frequency) const
+{
+    double years = endDate.toDouble() - startDate.toDouble();
+    int nPeriods = static_cast<int>(round(frequency * years));
+    double dt = 1.0 / frequency;
+    double denom = 0.0;
+
+    for (int i = 1; i <= nPeriods; ++i) {
+        // Compute payDate = startDate + i * (12 / frequency) months
+        int monthsToAdd = (12 / frequency) * i;
+        Date payDate = startDate;
+        payDate.month += monthsToAdd;
+        while (payDate.month > 12) {
+            payDate.year += 1;
+            payDate.month -= 12;
+        }
+
+        double t = payDate.toDouble() - startDate.toDouble();
+        double z = getRate(payDate);
+        double df = exp(-z * t);
+        denom += dt * df;
+    }
+
+    // Compute D(start) and D(end)
+    double tStart = startDate.toDouble() - startDate.toDouble(); // = 0
+    double tEnd = endDate.toDouble() - startDate.toDouble();
+    double zStart = getRate(startDate);
+    double zEnd = getRate(endDate);
+    double dfStart = exp(-zStart * tStart); // = 1
+    double dfEnd = exp(-zEnd * tEnd);
+
+    return (dfStart - dfEnd) / denom;
+}
+
+void RateCurve::display() const
+{
+  cout << "rate curve:" << name << endl;
+  for (size_t i = 0; i < tenorDates.size(); i++)
+  {
+    cout << tenorDates[i] << ":" << rates[i] << endl;
+  }
+  cout << endl;
+}
+
+// --- VolCurve Implementation ---
 void VolCurve::addVol(Date tenor, double rate)
 {
   tenors.push_back(tenor);
@@ -190,6 +219,7 @@ void VolCurve::display() const
   }
 }
 
+// --- Market Implementation ---
 void Market::Print() const
 {
   cout << endl << "market asof: " << asOf << endl;
@@ -245,38 +275,4 @@ std::istream &operator>>(std::istream &is, Market &mkt)
 {
   is >> mkt.asOf;
   return is;
-}
-
-double RateCurve::getMarketSwapRate(Date startDate, Date endDate, int frequency) const
-{
-    double years = endDate.toDouble() - startDate.toDouble();
-    int nPeriods = static_cast<int>(round(frequency * years));
-    double dt = 1.0 / frequency;
-    double denom = 0.0;
-
-    for (int i = 1; i <= nPeriods; ++i) {
-        // Compute payDate = startDate + i * (12 / frequency) months
-        int monthsToAdd = (12 / frequency) * i;
-        Date payDate = startDate;
-        payDate.month += monthsToAdd;
-        while (payDate.month > 12) {
-            payDate.year += 1;
-            payDate.month -= 12;
-        }
-
-        double t = payDate.toDouble() - startDate.toDouble();
-        double z = getRate(payDate);
-        double df = exp(-z * t);
-        denom += dt * df;
-    }
-
-    // Compute D(start) and D(end)
-    double tStart = startDate.toDouble() - startDate.toDouble(); // = 0
-    double tEnd = endDate.toDouble() - startDate.toDouble();
-    double zStart = getRate(startDate);
-    double zEnd = getRate(endDate);
-    double dfStart = exp(-zStart * tStart); // = 1
-    double dfEnd = exp(-zEnd * tEnd);
-
-    return (dfStart - dfEnd) / denom;
 }

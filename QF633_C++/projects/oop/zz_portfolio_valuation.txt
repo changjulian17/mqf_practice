@@ -11,8 +11,15 @@ Start: 2026-5-24, End: 2030-5-24
 Fixed Rate: 0.0450
 -----------------------------
 Trade Type: EuropeanOption
-PV: 30.4614
+PV: 93.9087
 Option Ticker: APPL
-Strike: 684.6000
+Strike: 619.4000
+Expiry: 2025-11-24
+Black-Scholes PV: 63.3530
+-----------------------------
+Trade Type: AmericanOption
+PV: 93.9087
+Option Ticker: APPL
+Strike: 619.4000
 Expiry: 2025-11-24
 -----------------------------

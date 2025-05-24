@@ -46,7 +46,9 @@ double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade
 	// Now fill market data if ticker is available
 	if (!ticker.empty()) {
 		stockPrice = mkt.getStockPrice();
-		vol = mkt.getVolCurve().getVol(trade.GetExpiry());
+		// if have multiple stocks, use the ticker in 
+		// getVolCurve to get the specific stock price
+		vol = mkt.getVolCurve().getVol(trade.GetExpiry()); 
 		rate = mkt.getCurve().getRate(trade.GetExpiry());
 	}
 
@@ -85,4 +87,53 @@ void JRRNBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, do
 	d = std::exp((rate - sigma * sigma / 2) * dt - sigma * std::sqrt(dt));
 	p = (std::exp(rate * dt) - d) / (u - d);
 	currentSpot = S0;
+}
+
+
+double norm_cdf(double x) {
+    return 0.5 * erfc(-x * M_SQRT1_2);
+}
+
+double BlackScholesPricer::Price(const Market& mkt, Trade* trade) {
+	// Try to cast to either option type and handle separately
+	if (auto euro = dynamic_cast<EuropeanOption*>(trade)) {
+		std::string ticker = euro->getTickerName();
+		double spot = mkt.getStockPrice();
+		double vol = mkt.getVolCurve().getVol(euro->getExpiry());
+		double rate = mkt.getCurve().getRate(euro->getExpiry());
+		double strike = euro->getStrike();
+		double expiry = euro->getExpiry() - mkt.asOf;
+		bool type =  euro->getOptionType();
+
+		double d1 = (log(spot / strike) + (rate + 0.5 * vol * vol) * expiry) / (vol * sqrt(expiry));
+		double d2 = d1 - vol * sqrt(expiry);
+		double df = exp(-rate * expiry);
+
+		if (type == OptionType::Call)
+			return spot * norm_cdf(d1) - strike * df * norm_cdf(d2);
+		else if (type == OptionType::Put)
+			return strike * df * norm_cdf(-d2) - spot * norm_cdf(-d1);
+		else
+			return 0.0;
+	} else if (auto amer = dynamic_cast<AmericanOption*>(trade)) {
+		std::string ticker = amer->getTickerName();
+		double spot = mkt.getStockPrice();
+		double vol = mkt.getVolCurve().getVol(amer->getExpiry());
+		double rate = mkt.getCurve().getRate(amer->getExpiry());
+		double strike = amer->getStrike();
+		double expiry = amer->getExpiry() - mkt.asOf;
+		bool type = amer->getOptionType();
+
+		double d1 = (log(spot / strike) + (rate + 0.5 * vol * vol) * expiry) / (vol * sqrt(expiry));
+		double d2 = d1 - vol * sqrt(expiry);
+		double df = exp(-rate * expiry);
+
+		if (type == OptionType::Call)
+			return spot * norm_cdf(d1) - strike * df * norm_cdf(d2);
+		else if (type == OptionType::Put)
+			return strike * df * norm_cdf(-d2) - spot * norm_cdf(-d1);
+		else
+			return 0.0;
+	}
+	return 0.0;
 }

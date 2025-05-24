@@ -107,4 +107,11 @@ protected:
 
 };
 
+double BlackScholes(double notional, double strike, double expiry, double spot, double vol, double rate, bool isCall);
+
+class BlackScholesPricer : public Pricer {
+public:
+    double Price(const Market& mkt, Trade* trade) override;
+};
+
 #endif
