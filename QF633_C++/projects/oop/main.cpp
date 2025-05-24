@@ -33,7 +33,7 @@ int main()
 	/*
 	load data from file and update market object with data
 	*/
-	int treeTimeSteps = 1000;
+	int treeTimeSteps = 10;
 	string curveFile = "curve.txt";
 	string volFile = "vol.txt";	
 	string bondFile = "bondPrice.txt";
@@ -52,9 +52,9 @@ int main()
 	myPortfolio.push_back(bond);
 	Trade* swap = new Swap(valueDate, valueDate + "1Y", valueDate + "5Y", 1'000'000, 0.045, 2);
 	myPortfolio.push_back(swap);
-	Trade* euroCall = new EuropeanOption("APPL", OptionType::Call, .95 * 652 , valueDate + "6M");
+	Trade* euroCall = new EuropeanOption("APPL", OptionType::Call, 1.05 * 652 , valueDate + "6M");
 	myPortfolio.push_back(euroCall);
-    Trade* amerCall = new AmericanOption("APPL", OptionType::Call, .95 * 652, valueDate + "6M");
+    Trade* amerCall = new AmericanOption("APPL", OptionType::Call, 1.05 * 652, valueDate + "6M");
     myPortfolio.push_back(amerCall);
 
 

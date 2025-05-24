@@ -23,9 +23,9 @@ double Pricer::Price(const Market& mkt, Trade* trade) {
 void BinomialTreePricer::ModelSetup(double S0, double sigma, double r, double dt) 
 {
 	// a basic version of binomial tree
-	u = 1.1;
-	d = 0.9;
-	p = (exp(r) - d) / (u - d);
+	u = 2;
+	d = 0.5;
+	p = (exp(r * dt) - d) / (u - d);
 }
 
 double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade) {
@@ -75,8 +75,8 @@ void CRRBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, dou
 {
 	//double b = std::exp((2 * rate + sigma * sigma) * dt) + 1;
 	//u = (b + std::sqrt(b * b - 4 * std::exp(2 * rate * dt))) / 2 / std::exp(rate * dt);
-	u = exp(sigma * dt);
-	d = exp(-sigma * dt);
+	u = exp(sigma * sqrt(dt));
+	d = exp(-sigma * sqrt(dt));
 	p = (exp(sigma * dt) - d) / (u - d);
 	currentSpot = S0;
 }

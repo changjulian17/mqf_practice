@@ -84,7 +84,7 @@ public:
 protected:
 	void ModelSetup(double S0, double sigma, double rate, double dt) override;
 	double GetSpot(int ti, int si) const override {
-		return currentSpot * std::pow(u, ti - 2 * si);
+		return currentSpot * std::pow(u, ti - si) * std::pow(d, si);
 	}
 	// double GetProbUp() const { return p; }
 	// double GetProbDown() const { return 1 - p; }
