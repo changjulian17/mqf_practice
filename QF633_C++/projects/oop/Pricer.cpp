@@ -77,7 +77,7 @@ void CRRBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, dou
 	//u = (b + std::sqrt(b * b - 4 * std::exp(2 * rate * dt))) / 2 / std::exp(rate * dt);
 	u = exp(sigma * sqrt(dt));
 	d = exp(-sigma * sqrt(dt));
-	p = (exp(sigma * dt) - d) / (u - d);
+	p = (exp(rate * dt) - d) / (u - d);
 	currentSpot = S0;
 }
 

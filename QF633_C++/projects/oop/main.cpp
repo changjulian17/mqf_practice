@@ -33,7 +33,7 @@ int main()
 	/*
 	load data from file and update market object with data
 	*/
-	int treeTimeSteps = 10;
+	int treeTimeSteps = 1'000;
 	string curveFile = "curve.txt";
 	string volFile = "vol.txt";	
 	string bondFile = "bondPrice.txt";
