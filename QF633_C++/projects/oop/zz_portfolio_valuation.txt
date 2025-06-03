@@ -1,25 +1,44 @@
-Trade Type: Bond
-PV: 94671.8257
-Bond Name: SGD-MAS-BILL
-Maturity: 2027-5-25
-Coupon: 2.5000
------------------------------
 Trade Type: Swap
-PV: -11889.1069
-Swap Notional: 1000000.0000
-Start: 2026-5-25, End: 2030-5-25
+PV: nan
+Swap Notional: 10000000.0000
+Start: 2025-1-3, End: 2027-1-3
 Fixed Rate: 0.0450
 -----------------------------
+Trade Type: Swap
+PV: nan
+Swap Notional: 20000000.0000
+Start: 2025-1-3, End: 2029-1-3
+Fixed Rate: 0.0300
+-----------------------------
+Trade Type: Bond
+PV: 336239.4731
+Bond Name: usd-gov
+Maturity: 2035-1-3
+Coupon: 0.0250
+-----------------------------
 Trade Type: EuropeanOption
-PV: 28.1040
+PV: 58.7733
 Option Ticker: APPL
-Strike: 684.6000
-Expiry: 2025-11-25
-Black-Scholes PV: 28.1043
+Strike: 625.0000
+Expiry: 2026-1-3
+Black-Scholes PV: 58.8136
+-----------------------------
+Trade Type: EuropeanOption
+PV: 50.8110
+Option Ticker: APPL
+Strike: 700.0000
+Expiry: 2027-1-3
+Black-Scholes PV: 50.6736
 -----------------------------
 Trade Type: AmericanOption
-PV: 28.1040
+PV: 58.7733
 Option Ticker: APPL
-Strike: 684.6000
-Expiry: 2025-11-25
+Strike: 625.0000
+Expiry: 2026-1-3
+-----------------------------
+Trade Type: AmericanOption
+PV: 60.3565
+Option Ticker: APPL
+Strike: 700.0000
+Expiry: 2027-1-3
 -----------------------------

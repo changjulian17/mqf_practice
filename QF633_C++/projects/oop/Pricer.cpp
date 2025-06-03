@@ -49,7 +49,8 @@ double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade
 		// if have multiple stocks, use the ticker in 
 		// getVolCurve to get the specific stock price
 		vol = mkt.getVolCurve().getVol(trade.GetExpiry()); 
-		rate = mkt.getCurve().getRate(trade.GetExpiry());
+		rate = .04;
+		// rate = mkt.getCurve().getRate(trade.GetExpiry());
 	}
 
 	ModelSetup(stockPrice, vol, rate, dt);
@@ -73,8 +74,7 @@ double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade
 
 void CRRBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, double dt)
 {
-	//double b = std::exp((2 * rate + sigma * sigma) * dt) + 1;
-	//u = (b + std::sqrt(b * b - 4 * std::exp(2 * rate * dt))) / 2 / std::exp(rate * dt);
+	rate = .04;
 	u = exp(sigma * sqrt(dt));
 	d = exp(-sigma * sqrt(dt));
 	p = (exp(rate * dt) - d) / (u - d);
@@ -83,6 +83,7 @@ void CRRBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, dou
 
 void JRRNBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, double dt)
 {
+	rate = .04;
 	u = std::exp((rate - sigma * sigma / 2) * dt + sigma * std::sqrt(dt));
 	d = std::exp((rate - sigma * sigma / 2) * dt - sigma * std::sqrt(dt));
 	p = (std::exp(rate * dt) - d) / (u - d);
@@ -100,29 +101,11 @@ double BlackScholesPricer::Price(const Market& mkt, Trade* trade) {
 		std::string ticker = euro->getTickerName();
 		double spot = mkt.getStockPrice();
 		double vol = mkt.getVolCurve().getVol(euro->getExpiry());
-		double rate = mkt.getCurve().getRate(euro->getExpiry());
+		double rate = .04;
+		// double rate = mkt.getCurve().getRate(euro->getExpiry());
 		double strike = euro->getStrike();
 		double expiry = euro->getExpiry() - mkt.asOf;
 		bool type =  euro->getOptionType();
-
-		double d1 = (log(spot / strike) + (rate + 0.5 * vol * vol) * expiry) / (vol * sqrt(expiry));
-		double d2 = d1 - vol * sqrt(expiry);
-		double df = exp(-rate * expiry);
-
-		if (type == OptionType::Call)
-			return spot * norm_cdf(d1) - strike * df * norm_cdf(d2);
-		else if (type == OptionType::Put)
-			return strike * df * norm_cdf(-d2) - spot * norm_cdf(-d1);
-		else
-			return 0.0;
-	} else if (auto amer = dynamic_cast<AmericanOption*>(trade)) {
-		std::string ticker = amer->getTickerName();
-		double spot = mkt.getStockPrice();
-		double vol = mkt.getVolCurve().getVol(amer->getExpiry());
-		double rate = mkt.getCurve().getRate(amer->getExpiry());
-		double strike = amer->getStrike();
-		double expiry = amer->getExpiry() - mkt.asOf;
-		bool type = amer->getOptionType();
 
 		double d1 = (log(spot / strike) + (rate + 0.5 * vol * vol) * expiry) / (vol * sqrt(expiry));
 		double d2 = d1 - vol * sqrt(expiry);

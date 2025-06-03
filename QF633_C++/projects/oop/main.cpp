@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 
 #include "Market.h"
 #include "Pricer.h"
@@ -33,7 +34,7 @@ int main()
 	/*
 	load data from file and update market object with data
 	*/
-	int treeTimeSteps = 1'000;
+	int treeTimeSteps = 50;
 	string curveFile = "curve.txt";
 	string volFile = "vol.txt";	
 	string bondFile = "bondPrice.txt";
@@ -43,23 +44,55 @@ int main()
 
     mkt.Print(); // print out the market data
 
+    // Parse trade.txt and build portfolio
+    vector<Trade*> myPortfolio;
+    ifstream tradeFile("trade.txt");
+    string line;
+    getline(tradeFile, line); // skip header
 
-	//task 2, create a portfolio of bond, swap, european option, american option
-	//for each time, at least should have long / short, different tenor or expiry, different underlying
-	//totally no less than 16 trades
-	vector<Trade*> myPortfolio;										
-	Trade* bond = new Bond("SGD-MAS-BILL", valueDate, valueDate, valueDate + "2Y", 100'000, 2, 2.5, 101.5);
-	myPortfolio.push_back(bond);
-	Trade* swap = new Swap(valueDate, valueDate + "1Y", valueDate + "5Y", 1'000'000, 0.045, 2);
-	myPortfolio.push_back(swap);
-	Trade* euroCall = new EuropeanOption("APPL", OptionType::Call, 1.05 * 652 , valueDate + "6M");
-	myPortfolio.push_back(euroCall);
-    Trade* amerCall = new AmericanOption("APPL", OptionType::Call, 1.05 * 652, valueDate + "6M");
-    myPortfolio.push_back(amerCall);
+    while (getline(tradeFile, line)) {
+        if (line.empty() || line[0] == '/') continue; // skip empty or comment lines
+        stringstream ss(line);
+        string field;
+        vector<string> fields;
+        while (getline(ss, field, ';')) {
+            fields.push_back(field);
+        }
+        if (fields.size() < 11) continue;
 
+        string type = fields[1];
+        string trade_dt = fields[2];
+        string start_dt = fields[3];
+        string end_dt = fields[4];
+        double notional = stod(fields[5]);
+        string instrument = fields[6];
+        double rate = stod(fields[7]);
+        double strike = stod(fields[8]);
+        double freq = stod(fields[9]);
+        string optionType = fields[10];
 
-	//task 3, create a pricer and price the portfolio, output the pricing result of each deal.
-	std::ofstream out("zz_portfolio_valuation.txt");
+        // Parse dates
+        Date tradeDate, startDate, endDate;
+        sscanf(trade_dt.c_str(), "%d-%d-%d", &tradeDate.year, &tradeDate.month, &tradeDate.day);
+        sscanf(start_dt.c_str(), "%d-%d-%d", &startDate.year, &startDate.month, &startDate.day);
+        sscanf(end_dt.c_str(), "%d-%d-%d", &endDate.year, &endDate.month, &endDate.day);
+
+        if (type == "swap") {
+            myPortfolio.push_back(new Swap(tradeDate, startDate, endDate, notional, rate, freq));
+        } else if (type == "bond") {
+            myPortfolio.push_back(new Bond(instrument, tradeDate, startDate, endDate, notional, freq, rate, 100.0));
+        } else if (type == "european") {
+            OptionType optType = (optionType == "call") ? OptionType::Call : OptionType::Put;
+            myPortfolio.push_back(new EuropeanOption(instrument, optType, strike, endDate));
+        } else if (type == "american") {
+            OptionType optType = (optionType == "call") ? OptionType::Call : OptionType::Put;
+            myPortfolio.push_back(new AmericanOption(instrument, optType, strike, endDate));
+        }
+    }
+    tradeFile.close();
+
+    // Price and output results
+    std::ofstream out("zz_portfolio_valuation.txt");
     out << std::fixed << std::setprecision(4);
 
     for (auto trade : myPortfolio) {
