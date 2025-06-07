@@ -56,7 +56,7 @@ public:
         }
         else if (type == "bond")
         {
-            return make_shared<Bond>(instrument, tradeDate, startDate, endDate, notional, freq, rate, 100.0);
+            return make_shared<Bond>(instrument, tradeDate, startDate, endDate, notional, freq, rate, 1.0);
         }
         else
             return nullptr;

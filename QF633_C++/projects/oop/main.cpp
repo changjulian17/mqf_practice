@@ -38,14 +38,13 @@ int main()
 	string bondFile = "bondPrice.txt";
 	string stockFile = "stockPrice.txt";
 
-    // Market mkt = buildMarket(valueDate, curveFile, volFile, bondFile, stockFile);
     auto mkt = std::make_shared<Market>(buildMarket(valueDate, curveFile, volFile, bondFile, stockFile));
 
     mkt->Print(); // print out the market data
 
     vector<shared_ptr<Trade>> myPortfolio;
-    LinearTradeFactory linearFactory;
-    OptionTradeFactory optionFactory;
+    auto linearFactory = std::make_unique<LinearTradeFactory>();
+    auto optionFactory = std::make_unique<OptionTradeFactory>();
 
     ifstream tradeFile("trade.txt");
     string line;
@@ -79,9 +78,9 @@ int main()
 
         shared_ptr<Trade> tradePtr;
         if (type == "swap" || type == "bond") {
-            tradePtr = linearFactory.createTrade(type, instrument, tradeDate, startDate, endDate, notional, rate, 1/freq, strike, optionType);
+            tradePtr = linearFactory->createTrade(type, instrument, tradeDate, startDate, endDate, notional, rate, 1/freq, strike, optionType);
         } else if (type == "european" || type == "american") {
-            tradePtr = optionFactory.createTrade(type, instrument, tradeDate, startDate, endDate, notional, rate, 1/freq, strike, optionType);
+            tradePtr = optionFactory->createTrade(type, instrument, tradeDate, startDate, endDate, notional, rate, 1/freq, strike, optionType);
         }
         if (tradePtr) {
             myPortfolio.push_back(tradePtr);
@@ -126,7 +125,7 @@ int main()
                 out << "Expiry: " << euro->getExpiry() << "\n";
 
                 BlackScholesPricer bsPricer;
-                double bsPV = bsPricer.Price(*mkt, trade.get()); // <-- dereference shared_ptr
+                double bsPV = bsPricer.Price(*mkt, trade.get());
                 out << "Black-Scholes PV: " << bsPV << "\n";
             } else if (auto amer = dynamic_cast<AmericanOption*>(trade.get())) {
                 out << "Option Ticker: " << amer->getTickerName() << "\n";
