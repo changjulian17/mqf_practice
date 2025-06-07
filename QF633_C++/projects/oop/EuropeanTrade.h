@@ -21,6 +21,11 @@ public:
 	Date getExpiry() const { return expiryDate; }
 	OptionType getOptionType() const { return optType; }
 
+	inline void setStrike(double _strike) { strike = _strike; }
+	inline void setOptionType(OptionType type) { optType = type; }
+	inline void setExpiry(const Date& d) { expiryDate = d; }
+	inline void setTickerName(const std::string& n) { ticker_name = n; }
+
 protected:
 	std::string ticker_name;
 	OptionType optType;

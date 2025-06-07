@@ -6,15 +6,17 @@ class Bond : public Trade {
 
 public:
     Bond(const std::string& name, const Date& tradeDate, const Date& start, const Date& end, 
-        double notional, int couponFreq, double coupon, double price) // add couponRate here
-        : Trade("BondTrade", tradeDate) {
-        startDate = start;
-		endDate = end;
-		bondName = name;
-        bondNotional = notional;
-        frequency = couponFreq;
-        couponRate = coupon; // set couponRate
-        tradePrice = price;
+         double notional, int couponFreq, double coupon, double price)
+        : Trade("BondTrade", tradeDate),
+          bondName(name),
+          bondNotional(notional),
+          tradePrice(price),
+          couponRate(coupon),
+          frequency(couponFreq),
+          startDate(start),
+          endDate(end)
+    {
+        // No additional logic needed; just initialize members
     }
 
     std::string getName() const { return bondName; }
@@ -22,6 +24,15 @@ public:
     Date getMaturity() const { return endDate; }
     double getCouponRate() const { return couponRate; }
     int getFrequency() const { return frequency; }
+
+    inline void setStartDate(const Date& d) { startDate = d; }
+    inline void setEndDate(const Date& d) { endDate = d; }
+    inline void setNotional(double n) { bondNotional = n; }
+    inline void setCouponRate(double r) { couponRate = r; }
+    inline void setFrequency(int f) { frequency = f; }
+    inline void setTradePrice(double p) { tradePrice = p; }
+    inline void setName(const std::string& n) { bondName = n; }
+
 
     inline double Payoff(double marketPrice) const override
     { 

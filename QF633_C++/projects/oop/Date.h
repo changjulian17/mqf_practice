@@ -11,7 +11,7 @@ public:
 	int day = 0;
 	Date(int y, int m, int d) : year(y), month(m), day(d) {};
 	Date() {
-		std::cout << "default Date constructor called" << std::endl;
+		// std::cout << "default Date constructor called" << std::endl;
 	};
 
 	static Date addTenor(const Date& base, const std::string& tenor); // Add this line

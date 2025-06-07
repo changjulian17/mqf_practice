@@ -40,33 +40,14 @@ private:
 class Market
 {
 public:
-	Date asOf;
-	std::string name;		// pay attention to the memory leak, this is a pointer, not a string
+    Date asOf;
+    std::string name;
 
-	Market() {
-		cout << "default market constructor is called by object@" << this << endl;
-	}
-
-	Market(const Date& now) : asOf(now), name("test") {		// initializer list
-		cout << "market constructor is called by object@" << this << endl;
-		name = new char[5];
-	}
-
-	Market(const Market& other) : asOf(other.asOf), name(other.name) {
-		cout << "copy constructor is called by object@" << this << endl;
-	}
-
-	Market& operator=(const Market& other) {
-		cout << "assignment constructor is called by object@" << this << endl;
-		if (this != &other) {  // Check for self-assignment
-			asOf = other.asOf;
-		}
-		return *this;
-	}
-
-	~Market() {
-		cout << "Market destructor is called" << endl;
-	}
+    Market() = default;
+    Market(const Date& now) : asOf(now), name("test") {}
+    Market(const Market& other) = default;
+    Market& operator=(const Market& other) = default;
+    ~Market() = default;
 
 	void Print() const;
 	void addCurve(const std::string& curveName, const RateCurve& curve);//implement this

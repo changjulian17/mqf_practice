@@ -19,13 +19,17 @@ public:
 	Date getEndDate() const { return endDate; }
 	double getFixedRate() const { return tradeRate; }
 
-	// Now Payoff takes a RateCurve
+	inline void setStartDate(const Date& d) { startDate = d; }
+	inline void setEndDate(const Date& d) { endDate = d; }
+	inline void setNotional(double n) { swapNotional = n; }
+	inline void setFixedRate(double r) { tradeRate = r; }
+	inline void setFrequency(int f) { frequency = f; }
+
 	double Payoff(double marketRate) const
 	{
 		return swapNotional * (tradeRate - marketRate);
 	}
 
-	// Now Payoff takes a RateCurve
 	double Payoff(const RateCurve& curve) const
 	{	
 		double annuity = 0.0;

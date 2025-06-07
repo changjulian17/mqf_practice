@@ -15,6 +15,7 @@
 #include "Bond.h"
 #include "Swap.h"
 #include "AmericanTrade.h"
+#include "TradeFactory.h"
 
 using namespace std;
 
@@ -31,27 +32,27 @@ int main()
 		valueDate.day = timeInfo.tm_mday;
 	};
 	
-	/*
-	load data from file and update market object with data
-	*/
 	int treeTimeSteps = 50;
 	string curveFile = "curve.txt";
 	string volFile = "vol.txt";	
 	string bondFile = "bondPrice.txt";
 	string stockFile = "stockPrice.txt";
 
-	Market mkt = buildMarket(valueDate, curveFile, volFile, bondFile, stockFile);
+    // Market mkt = buildMarket(valueDate, curveFile, volFile, bondFile, stockFile);
+    auto mkt = std::make_shared<Market>(buildMarket(valueDate, curveFile, volFile, bondFile, stockFile));
 
-    mkt.Print(); // print out the market data
+    mkt->Print(); // print out the market data
 
-    // Parse trade.txt and build portfolio
-    vector<Trade*> myPortfolio;
+    vector<shared_ptr<Trade>> myPortfolio;
+    LinearTradeFactory linearFactory;
+    OptionTradeFactory optionFactory;
+
     ifstream tradeFile("trade.txt");
     string line;
     getline(tradeFile, line); // skip header
 
     while (getline(tradeFile, line)) {
-        if (line.empty() || line[0] == '/') continue; // skip empty or comment lines
+        if (line.empty() || line[0] == '/') continue;
         stringstream ss(line);
         string field;
         vector<string> fields;
@@ -71,22 +72,19 @@ int main()
         double freq = stod(fields[9]);
         string optionType = fields[10];
 
-        // Parse dates
         Date tradeDate, startDate, endDate;
         sscanf(trade_dt.c_str(), "%d-%d-%d", &tradeDate.year, &tradeDate.month, &tradeDate.day);
         sscanf(start_dt.c_str(), "%d-%d-%d", &startDate.year, &startDate.month, &startDate.day);
         sscanf(end_dt.c_str(), "%d-%d-%d", &endDate.year, &endDate.month, &endDate.day);
 
-        if (type == "swap") {
-            myPortfolio.push_back(new Swap(tradeDate, startDate, endDate, notional, rate, freq));
-        } else if (type == "bond") {
-            myPortfolio.push_back(new Bond(instrument, tradeDate, startDate, endDate, notional, freq, rate, 100.0));
-        } else if (type == "european") {
-            OptionType optType = (optionType == "call") ? OptionType::Call : OptionType::Put;
-            myPortfolio.push_back(new EuropeanOption(instrument, optType, strike, endDate));
-        } else if (type == "american") {
-            OptionType optType = (optionType == "call") ? OptionType::Call : OptionType::Put;
-            myPortfolio.push_back(new AmericanOption(instrument, optType, strike, endDate));
+        shared_ptr<Trade> tradePtr;
+        if (type == "swap" || type == "bond") {
+            tradePtr = linearFactory.createTrade(type, instrument, tradeDate, startDate, endDate, notional, rate, 1/freq, strike, optionType);
+        } else if (type == "european" || type == "american") {
+            tradePtr = optionFactory.createTrade(type, instrument, tradeDate, startDate, endDate, notional, rate, 1/freq, strike, optionType);
+        }
+        if (tradePtr) {
+            myPortfolio.push_back(tradePtr);
         }
     }
     tradeFile.close();
@@ -96,48 +94,46 @@ int main()
     out << std::fixed << std::setprecision(4);
 
     for (auto trade : myPortfolio) {
-        Pricer* pricer = nullptr;
+        std::shared_ptr<Pricer> pricer;
 
-        if (dynamic_cast<Bond*>(trade)) {
-            pricer = new BondPricer();
-        } else if (dynamic_cast<Swap*>(trade)) {
-            pricer = new SwapPricer();
-        } else if (dynamic_cast<EuropeanOption*>(trade) || dynamic_cast<AmericanOption*>(trade)) {
-            pricer = new CRRBinomialTreePricer(treeTimeSteps);
+        if (dynamic_cast<Bond*>(trade.get())) {
+            pricer = std::make_shared<BondPricer>();
+        } else if (dynamic_cast<Swap*>(trade.get())) {
+            pricer = std::make_shared<SwapPricer>();
+        } else if (dynamic_cast<EuropeanOption*>(trade.get()) || dynamic_cast<AmericanOption*>(trade.get())) {
+            pricer = std::make_shared<CRRBinomialTreePricer>(treeTimeSteps);
         }
 
         if (pricer) {
-            double pv = pricer->Price(mkt, trade);
+            double pv = pricer->Price(*mkt, trade.get()); // <-- dereference shared_ptr
 
-            std::string typeName = typeid(*trade).name();
+            std::string typeName = typeid(*(trade.get())).name();
             typeName.erase(std::remove_if(typeName.begin(), typeName.end(), ::isdigit), typeName.end());
             out << "Trade Type: " << typeName << "\n";
             out << "PV: " << pv << "\n";
 
-            if (auto bond = dynamic_cast<Bond*>(trade)) {
+            if (auto bond = dynamic_cast<Bond*>(trade.get())) {
                 out << "Bond Name: " << bond->getName() << "\n";
                 out << "Maturity: " << bond->getMaturity() << "\n";
                 out << "Coupon: " << bond->getCouponRate() << "\n";
-            } else if (auto swap = dynamic_cast<Swap*>(trade)) {
+            } else if (auto swap = dynamic_cast<Swap*>(trade.get())) {
                 out << "Swap Notional: " << swap->getNotional() << "\n";
                 out << "Start: " << swap->getStartDate() << ", End: " << swap->getEndDate() << "\n";
                 out << "Fixed Rate: " << swap->getFixedRate() << "\n";
-            } else if (auto euro = dynamic_cast<EuropeanOption*>(trade)) {
+            } else if (auto euro = dynamic_cast<EuropeanOption*>(trade.get())) {
                 out << "Option Ticker: " << euro->getTickerName() << "\n";
                 out << "Strike: " << euro->getStrike() << "\n";
                 out << "Expiry: " << euro->getExpiry() << "\n";
 
                 BlackScholesPricer bsPricer;
-                double bsPV = bsPricer.Price(mkt, trade);
+                double bsPV = bsPricer.Price(*mkt, trade.get()); // <-- dereference shared_ptr
                 out << "Black-Scholes PV: " << bsPV << "\n";
-            } else if (auto amer = dynamic_cast<AmericanOption*>(trade)) {
+            } else if (auto amer = dynamic_cast<AmericanOption*>(trade.get())) {
                 out << "Option Ticker: " << amer->getTickerName() << "\n";
                 out << "Strike: " << amer->getStrike() << "\n";
                 out << "Expiry: " << amer->getExpiry() << "\n";
             }
             out << "-----------------------------\n";
-
-            delete pricer;
         }
     }
     out.close();
@@ -146,10 +142,7 @@ int main()
 	// a) compare CRR binomial tree result for an european option vs Black model
 	// b) compare CRR binomial tree result for an american option call vs european option call, and put
 
-	for (auto trade : myPortfolio) {
-		delete trade;
-	}
-	myPortfolio.clear();
+    myPortfolio.clear();
 
 	//final
 	cout << "Project build successfully!" << endl;
