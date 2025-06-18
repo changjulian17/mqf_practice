@@ -14,61 +14,76 @@ using namespace std;
 
 struct TradeResult
 {
-	size_t id;
-	string tradeInfo;
-	double PV=0;
-	double DV01=0;
-	double Vega=0;
+    size_t id;
+    string tradeInfo;
+    double PV=0;
+    double DV01=0;
+    double Vega=0;
 };
 
 void loadTrade(vector<shared_ptr<Trade>>& myPortfolio)
 {
-	string fileName = "trade.txt";
-	string header;
-	vector<string> tradeData;
-	readFromFile(fileName, header, tradeData);
-	vector<string> tradeHeader = split(header, ";");
-	for (size_t i = 0; i < tradeData.size(); i++) {
-		vector<string> tradeInfo = split(tradeData[i], ";");
-		int id = stoi(tradeInfo[0]);
-		string type = tradeInfo[1];
-		Date tradeDate = Date(tradeInfo[2]);
-		Date startDate = Date(tradeInfo[3]);
-		Date endDate = Date(tradeInfo[4]);
-		double notional = stod(tradeInfo[5]);
-		string undelrying = tradeInfo[6];
-		double rate = stod(tradeInfo[7]);
-		double strike = stod(tradeInfo[8]);
-		double freq = stod(tradeInfo[9]);
-		string optionTypeStr = tradeInfo[10];
-		// need to take in trade direction
-		OptionType optionType = OptionType::None;
-		if (optionTypeStr == "call")
-			optionType = OptionType::Call;
-		else if (optionTypeStr == "put")
-			optionType = OptionType::Put;
-		else
-			optionType = OptionType::None;
+    string fileName = "trade.txt";
+    string header;
+    vector<string> tradeData;
+    readFromFile(fileName, header, tradeData);
+    vector<string> tradeHeader = split(header, ";");
+    for (size_t i = 0; i < tradeData.size(); i++) {
+        vector<string> tradeInfo = split(tradeData[i], ";");
+        int id = stoi(tradeInfo[0]);
+        string type = tradeInfo[1];
+        Date tradeDate = Date(tradeInfo[2]);
+        Date startDate = Date(tradeInfo[3]);
+        Date endDate = Date(tradeInfo[4]);
+        double notional = stod(tradeInfo[5]);
+        string underlying = tradeInfo[6];
+        double rate = stod(tradeInfo[7]);
+        double strike = stod(tradeInfo[8]);
+        double freq = stod(tradeInfo[9]);
+        string optionTypeStr = tradeInfo[10];
+        string directionStr = tradeInfo[11];
+		directionStr.erase(std::remove(directionStr.begin(), directionStr.end(), '\r'), directionStr.end());
 
-		shared_ptr<Trade> trade;
-		if (type == "bond") {
-			auto bFactory = std::make_unique<BondFactory>();
-			trade = bFactory->createTrade(undelrying, startDate, endDate, notional, strike, freq, optionType);
-		}
-		else if (type == "swap") {
-			auto sFactory = std::make_unique<SwapFactory>();
-			trade = sFactory->createTrade(undelrying, startDate, endDate, notional, strike, freq, optionType);
-		}
-		else if (type == "european") {
-			auto eFactory = std::make_unique<EurOptFactory>();
-			trade = eFactory->createTrade(undelrying, startDate, endDate, notional, strike, freq, optionType);
-		}
-		else if (type == "american") {
-			auto aFactory = std::make_unique<AmericanOptFactory>();
-			trade = aFactory->createTrade(undelrying, startDate, endDate, notional, strike, freq, optionType);
-		}
-		myPortfolio.push_back(trade);
-	}
+        OptionType optionType = OptionType::None;
+        if (optionTypeStr == "call")
+            optionType = OptionType::Call;
+        else if (optionTypeStr == "put")
+            optionType = OptionType::Put;
+        else
+            optionType = OptionType::None;
+
+        DirectionType direction = DirectionType::NoneDir;
+        if (directionStr == "pay")
+            direction = DirectionType::Pay;
+        else if (directionStr == "receive")
+            direction = DirectionType::Receive;
+        else if (directionStr == "long")
+            direction = DirectionType::Long;
+        else if (directionStr == "short")
+            direction = DirectionType::Short;
+		else
+			direction = DirectionType::NoneDir;
+
+        shared_ptr<Trade> trade;
+        if (type == "bond") {
+            auto bFactory = std::make_unique<BondFactory>();
+            trade = bFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
+        }
+        else if (type == "swap") {
+            auto sFactory = std::make_unique<SwapFactory>();
+            trade = sFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
+        }
+        else if (type == "european") {
+            auto eFactory = std::make_unique<EurOptFactory>();
+            trade = eFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
+        }
+        else if (type == "american") {
+            auto aFactory = std::make_unique<AmericanOptFactory>();
+            trade = aFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
+        }
+        // Optionally, you can store direction in a TradeResult or attach to Trade if needed
+        myPortfolio.push_back(trade);
+    }
 }
 
 void loadIrCurve(Market& mkt, const string& fileName, const string& curveName)
@@ -151,8 +166,8 @@ int main()
 	loadTrade(myPortfolio);
 	auto sFactory = std::make_unique<SwapFactory>();
 	auto eFactory = std::make_unique<EurOptFactory>();
-	auto swap = sFactory->createTrade("USD-SOFR", Date(2024, 1, 1), Date(2034, 1, 1), -1000000, 0.03, 1.0, OptionType::None);
-	auto eCall = eFactory->createTrade("APPL", Date(2024, 1, 1), Date(2025, 1, 1), 10000, 530, 0, OptionType::Call);
+	auto swap = sFactory->createTrade("USD-SOFR", Date(2024, 1, 1), Date(2034, 1, 1), -1000000, .05, 0.03, 1.0, OptionType::None, DirectionType::Pay);
+	auto eCall = eFactory->createTrade("APPL", Date(2024, 1, 1), Date(2025, 1, 1), 10000, 0, 530, 0, OptionType::Call, DirectionType::Long);
 
 	// step 3, creat a pricer and price the portfolio, output the pricing result of each deal 
 	vector<TradeResult> results;
@@ -186,7 +201,7 @@ int main()
 	testShockUp.market_id = "USD-SOFR";
 	testShockUp.shock = make_pair(Date(), shockUp);
 	auto testShockDown = MarketShock();
-	testShockDown.market_id = "usd-sofr";
+	testShockDown.market_id = "USD-SOFR";
 	testShockDown.shock = make_pair(Date(), shockDown);
 	auto shockedUpCurveUp = CurveDecorator(*mkt, testShockUp);
 	auto shockedUpCurveDown = CurveDecorator(*mkt, testShockDown);

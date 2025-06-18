@@ -26,15 +26,31 @@ void Bond::generateSchedule()
 
 }
 double Bond::Payoff(double s) const
-{
-  double pv = notional * (s - tradePrice);
-  return pv;
+{ 		// implement direction
+	double pv = notional * (s - tradePrice);
+	return pv;
 }
-double Bond::Pv(const Market& mkt) const
-{
-  //using cash flow discunting
-  // implement this
-  return 0;
+double Bond::Pv(const Market& mkt) const {
+    Date valueDate = mkt.asOf;
+    auto rc = mkt.getCurve(rateCurve);
+    double pv = 0.0;
+
+    for (size_t i = 1; i < bondSchedule.size(); ++i) {
+        const auto& dt = bondSchedule[i];
+        if (dt < valueDate) continue;
+
+        double tau = (bondSchedule[i] - bondSchedule[i - 1]) / 360.0;
+        double df = rc->getDf(dt);
+        pv += notional * tau * coupon * df;
+
+        if (i == bondSchedule.size() - 1)
+            pv += notional * df;  // principal
+    }
+
+    if (direction == DirectionType::Long) return pv;
+    if (direction == DirectionType::Short) return -pv;
+
+    throw std::runtime_error("Unsupported direction type for Bond");
 }
 
 

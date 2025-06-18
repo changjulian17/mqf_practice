@@ -10,4 +10,12 @@ enum OptionType
     None
 };
 
+enum DirectionType {
+    Pay,
+    Receive,
+    Long,
+    Short,
+    NoneDir
+};
+
 #endif

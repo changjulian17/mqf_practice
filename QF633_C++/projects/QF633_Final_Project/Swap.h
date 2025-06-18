@@ -1,11 +1,11 @@
 #pragma once
 #include "Trade.h"
 #include "helper.h"
+#include "Types.h"
 
 class Swap : public Trade {
 public:
-	//make necessary change
-	Swap(string name, Date start, Date end, double _notional, double _rate, double _freq)
+	Swap(string name, Date start, Date end, double _notional, double _rate, double _freq, DirectionType _direction)
 	{
 		tradeType = "Swap";
 		underlying = to_upper(name);
@@ -16,6 +16,7 @@ public:
 		tradeRate = _rate;
 		frequency = _freq; 
 		rateCurve = to_upper(name).substr(0, 3) == "SGD" ? "SGD-SORA" : "USD-SOFR";
+		direction = _direction;
 		generateSchedule();
 	}
 
@@ -29,7 +30,8 @@ public:
 	double Pv(const Market& mkt) const;
 	double getAnnuity(const Market& mkt) const; //implement this in a cpp file
 	void generateSchedule();
-	
+
+	DirectionType getDirection() const { return direction; } // accessor
 
 private:
 	Date startDate;
@@ -38,5 +40,5 @@ private:
 	double frequency; // use 1 for annual, 2 for semi-annual etc
 	vector<Date> swapSchedule;
 	string rateCurve;
-
+	DirectionType direction;
 };

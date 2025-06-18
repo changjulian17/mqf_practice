@@ -10,7 +10,7 @@
 class EuropeanOption : public TreeProduct {
 public:
 	EuropeanOption() {};
-	EuropeanOption(OptionType _optType, double _notional, double _strike, const Date& _start, const Date& _expiry, const std::string& name)
+	EuropeanOption(OptionType _optType, double _notional, double _strike, const Date& _start, const Date& _expiry, const std::string& name, DirectionType _direction)
 	{
 		tradeType = "TreeProduct";
 		underlying = to_upper(name);
@@ -20,10 +20,12 @@ public:
 		notional = _notional;
 		tradeDate = _start;
 		rateCurve = "USD-SOFR"; // default rate curve, can be changed later
+		direction = _direction;
 	};
 	inline string getType() const { return tradeType; };
 	inline string getUnderlying() const { return underlying; };
 	inline double getNotional() const { return notional; }
+	DirectionType getDirection() const { return direction; }
 	virtual double Payoff(double S) const { return PAYOFF::VanillaOption(optType, strike, S); }
 	virtual const Date& GetExpiry() const { return expiryDate; }
 	virtual double ValueAtNode(double S, double t, double continuation) const { return continuation; }
@@ -33,7 +35,7 @@ protected:
 	double strike = 0;
 	Date expiryDate;
 	string rateCurve;
-
+	DirectionType direction;
 };
 
 class EuroCallSpread : public EuropeanOption {
@@ -51,7 +53,7 @@ private:
 };
 
 // TODO : implement black-scholes pricer for european options
-
+// TODO : implement direction
 
 
 #endif

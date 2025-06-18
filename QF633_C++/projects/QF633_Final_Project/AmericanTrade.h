@@ -10,7 +10,7 @@
 class AmericanOption : public TreeProduct {
 public:
 	AmericanOption() {}
-	AmericanOption(OptionType _optType, double _notional, double _strike, const Date& _start, const Date& _expiry, const std::string& name)
+	AmericanOption(OptionType _optType, double _notional, double _strike, const Date& _start, const Date& _expiry, const std::string& name, DirectionType _direction)
 	{
 		tradeType = "TreeProduct";
 		underlying = to_upper(name);
@@ -20,10 +20,12 @@ public:
 		notional = _notional;
 		tradeDate = _start;		
 		rateCurve = "USD-SOFR"; // default rate curve, can be changed later
+		direction = _direction;
 	}
 	inline string getType() const { return tradeType; };
 	inline string getUnderlying() const { return underlying; };
 	inline double getNotional() const { return notional; }
+	DirectionType getDirection() const { return direction; }
 	virtual double Payoff(double S) const
 	{
 		return PAYOFF::VanillaOption(optType, strike, S);
@@ -42,6 +44,7 @@ private:
 	double strike;
 	Date expiryDate;
 	string rateCurve;
+	DirectionType direction;
 };
 
 class AmerCallSpread : public TreeProduct {
@@ -65,5 +68,8 @@ private:
 	double strike2;
 	Date expiryDate;
 };
+
+// TODO : implement tree pricer
+// TODO : implement direction
 
 #endif

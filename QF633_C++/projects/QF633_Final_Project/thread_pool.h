@@ -33,7 +33,7 @@ public:
 							return; 
 						} 
 						// Get the next task from the queue 
-						task = move(tasks_.front()); 
+						task = std::move(tasks_.front()); 
 						tasks_.pop(); 
 					} 
 					task(); 

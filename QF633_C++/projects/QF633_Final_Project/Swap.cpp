@@ -61,8 +61,16 @@ double Swap::Pv(const Market& mkt) const
 		df = rc->getDf(dt);
 		fixPv += notional * tau * tradeRate * df;
 	}
-
-	return fixPv + fltPv;
+    
+	if (direction == DirectionType::Pay) {
+        return fltPv - fixPv;
+    }
+	else if (direction == DirectionType::Receive) {
+        return - (fltPv - fixPv);
+    }
+	else {
+		throw std::runtime_error("Error: unsupported direction type for Swap!");
+	}
 }
 
 
