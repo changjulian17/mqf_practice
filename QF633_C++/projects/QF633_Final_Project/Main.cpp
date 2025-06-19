@@ -123,6 +123,29 @@ void loadVolCurve(Market& mkt, const string& fileName, const string& curveName)
 	mkt.addVolCurve(curveName, curve);
 }
 
+void loadStockPrices(Market& mkt, const string& fileName) {
+    vector<string> stockData;
+	string lineText;
+	ifstream input_file(fileName);
+	if (!input_file.is_open()) {
+		cerr << "Error: Could not open file '" << fileName << "'" << endl;
+	}
+
+	// body
+	while (getline(input_file, lineText)) {
+		stockData.push_back(lineText);
+	}
+	input_file.close();
+    for (const auto& line : stockData) {
+        vector<string> tokens = split(line, ":");
+        if (tokens.size() >= 2) {
+            string ticker = tokens[0];
+            double price = stod(tokens[1]);
+            mkt.addStockPrice(ticker, price);
+        }
+    }
+}
+
 void outPutResult(const vector<TradeResult>& results)
 {
     vector<string> output;
@@ -154,9 +177,10 @@ int main()
 	loadIrCurve(*mkt, "usd_curve.txt", "USD-SOFR");
 	loadIrCurve(*mkt, "sgd_curve.txt", "SGD-SORA");
 	loadVolCurve(*mkt, "vol.txt", "LOGVOL");
-	mkt->addStockPrice("APPL", 652.0);
-	mkt->addStockPrice("SP500", 5035.7);
-	mkt->addStockPrice("STI", 3420);
+	loadStockPrices(*mkt, "stockPrice.txt");
+	// mkt->addStockPrice("APPL", 652.0);
+	// mkt->addStockPrice("SP500", 5035.7);
+	// mkt->addStockPrice("STI", 3420);
 
 	mkt->Print();
 	auto usdCurve = mkt->getCurve("USD-SOFR");
@@ -183,7 +207,7 @@ int main()
 		TradeResult re;
 		re.id = i + 1;
 		re.tradeInfo = trade->getType() + " " + trade->getUnderlying();
-
+		// add direction into pricing
 		re.PV = pricer->Price(*mkt, trade);
 		if (dynamic_cast<EuropeanOption*>(trade.get())) {
 			re.BlackPV = bsPricer->Price(*mkt, trade) * trade->getNotional();
@@ -213,13 +237,12 @@ int main()
 	testShockDown.market_id = "USD-SOFR";
 	testShockDown.shock = make_pair(Date(), shockDown);
 	auto shockedUpCurveUp = CurveDecorator(*mkt, testShockUp);
-	auto shockedUpCurveDown = CurveDecorator(*mkt, testShockDown);
 
 	unordered_map<string, double> thisDealDv01;
 	double pv_up, pv_down;
 	auto m_up = shockedUpCurveUp.getMarketUp();
+	auto m_down = shockedUpCurveUp.getMarketDown();
 	pv_up = swap->Pv(m_up);
-	auto m_down = shockedUpCurveDown.getMarketDown();
 	pv_down = swap->Pv(m_down);
 	double dv01 = (pv_up - pv_down) / 2.0;
 	thisDealDv01.emplace(risk_id, dv01);
@@ -227,10 +250,12 @@ int main()
 	//example2, using risk engine to compute full set of dv01 for a swap
 	RiskEngine re(*mkt, curve_shock, vol_shock, price_shock);
 	re.computeRisk("dv01", swap, true);
+	//  TODO: add dv01 for all swaps and add to output text files
+	// TODO: add vega for all options and add to output text files
 	auto dv01_of_swap = re.getResult();
 
 	//example 3, demo using thread pool
-	if (true){
+	if (false){
 		map<string, double> swapDv01;
 		ThreadPool pool(4);
 	

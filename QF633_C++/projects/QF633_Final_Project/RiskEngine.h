@@ -85,7 +85,7 @@ public:
 		auto sgdCurveShock = MarketShock();
 		sgdCurveShock.market_id = "SGD-SORA";
 		sgdCurveShock.shock = make_pair(Date(), 0.0001);
-		auto sgdShockedCurve = CurveDecorator(market, usdCurveShock);
+		auto sgdShockedCurve = CurveDecorator(market, sgdCurveShock);
 		curveShocks.emplace("SGD-SORA", sgdShockedCurve);
 
 		auto volShock = MarketShock();
@@ -100,7 +100,11 @@ public:
 	void computeRisk(string riskType, std::shared_ptr<Trade> trade, bool singleThread);
 
 	inline map<string, double> getResult() const {
-		cout << " risk result: " << endl;
+		cout << " risk result: ";
+		for (const auto& kv : result) {
+			cout << "{" << kv.first << ": " << kv.second << "} ";
+		}
+		cout << endl;
 		return result;
 	};
 
