@@ -25,6 +25,8 @@ public:
 	inline string getType() const { return tradeType; };
 	inline string getUnderlying() const { return underlying; };
 	inline double getNotional() const { return notional; }
+	inline double getStrike() const { return strike; }
+	inline OptionType getOptionType() const { return optType; }
 	DirectionType getDirection() const { return direction; }
 	virtual double Payoff(double S) const { return PAYOFF::VanillaOption(optType, strike, S); }
 	virtual const Date& GetExpiry() const { return expiryDate; }

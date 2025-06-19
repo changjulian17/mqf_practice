@@ -24,8 +24,9 @@ public:
 	}
 	inline string getType() const { return tradeType; };
 	inline string getUnderlying() const { return underlying; };
-	inline double getNotional() const { return notional; }
-	DirectionType getDirection() const { return direction; }
+	inline double getStrike() const { return strike; };
+	inline double getNotional() const { return notional; };
+	DirectionType getDirection() const { return direction; };
 	virtual double Payoff(double S) const
 	{
 		return PAYOFF::VanillaOption(optType, strike, S);

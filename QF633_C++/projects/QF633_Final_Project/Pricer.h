@@ -78,4 +78,9 @@ private:
 	double currentSpot; // current market spot price
 };
 
+class BlackScholesPricer : public Pricer {
+public:
+    double Price(const Market& mkt, std::shared_ptr<Trade> trade);
+};
+
 #endif

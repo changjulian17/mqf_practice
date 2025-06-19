@@ -1,6 +1,11 @@
 #include <cmath>
 #include "Pricer.h"
+#include "Types.h"
+#include "EuropeanTrade.h"
 
+inline double norm_cdf(double x) {
+    return 0.5 * std::erfc(-x / std::sqrt(2));
+}
 
 double Pricer::Price(const Market& mkt, std::shared_ptr<Trade> trade)
 {
@@ -62,4 +67,29 @@ void JRRNBinomialTreePricer::ModelSetup(double S0, double sigma, double rate, do
 	d = std::exp((rate - sigma * sigma / 2) * dt - sigma * std::sqrt(dt));
 	p = (std::exp(rate * dt) - d) / (u - d);
 	currentSpot = S0;
+}
+
+double BlackScholesPricer::Price(const Market& mkt, std::shared_ptr<Trade> trade)
+{
+	auto euro = std::dynamic_pointer_cast<EuropeanOption>(trade);
+	if (!euro) return 0.0;
+	double T = (euro->GetExpiry() - mkt.asOf)/365.0;
+	double s0 = mkt.getStockPrice(euro->getUnderlying());
+	auto volCurve = mkt.getVolCurve("LOGVOL");
+	double vol = volCurve->getVol(euro->GetExpiry());
+	auto irCurve = mkt.getCurve("USD-SOFR");
+	double rate = irCurve->getRate(euro->GetExpiry());
+	double strike = euro->getStrike();
+	bool type =  euro->getOptionType();
+
+	double d1 = (log(s0 / strike) + (rate + 0.5 * vol * vol) * T) / (vol * sqrt(T));
+	double d2 = d1 - vol * sqrt(T);
+	double df = exp(-rate * T);
+
+	if (type == OptionType::Call)
+		return s0 * norm_cdf(d1) - strike * df * norm_cdf(d2);
+	else if (type == OptionType::Put)
+		return strike * df * norm_cdf(-d2) - s0 * norm_cdf(-d1);
+	else
+		return 0.0;
 }

@@ -16,9 +16,10 @@ struct TradeResult
 {
     size_t id;
     string tradeInfo;
-    double PV=0;
-    double DV01=0;
-    double Vega=0;
+    double PV = 0;
+    double BlackPV = 0; // Add this line
+    double DV01 = 0;
+    double Vega = 0;
 };
 
 void loadTrade(vector<shared_ptr<Trade>>& myPortfolio)
@@ -124,15 +125,19 @@ void loadVolCurve(Market& mkt, const string& fileName, const string& curveName)
 
 void outPutResult(const vector<TradeResult>& results)
 {
-	vector<string> output;
-	size_t i = 0;
-	for (auto re : results) {
-		i++;
-		string row;
-		row = to_string(re.id) + "; " + re.tradeInfo + "; PV:" + to_string(re.PV) + "; Delta:" + to_string(re.DV01) + "; Vega:" + to_string(re.Vega);
-		output.push_back(row);
-	}
-	outputToFile("output.txt", output);
+    vector<string> output;
+    size_t i = 0;
+    for (auto re : results) {
+        i++;
+        string row;
+        row = to_string(re.id) + "; " + re.tradeInfo +
+              "; PV:" + to_string(re.PV) +
+              "; BlackPV:" + to_string(re.BlackPV) + // Add this line
+              "; Delta:" + to_string(re.DV01) +
+              "; Vega:" + to_string(re.Vega);
+        output.push_back(row);
+    }
+    outputToFile("output.txt", output);
 }
 
 int main()
@@ -172,14 +177,18 @@ int main()
 	// step 3, creat a pricer and price the portfolio, output the pricing result of each deal 
 	vector<TradeResult> results;
 	auto pricer = make_shared<CRRBinomialTreePricer>(50);
+	auto bsPricer = std::make_shared<BlackScholesPricer>();
 	for (size_t i = 0; i < myPortfolio.size(); i++) {
 		auto& trade = myPortfolio[i];
-		double pv = pricer->Price(*mkt, trade);
-		//log pv details out in a file
 		TradeResult re;
 		re.id = i + 1;
 		re.tradeInfo = trade->getType() + " " + trade->getUnderlying();
-		re.PV = pv;
+
+		re.PV = pricer->Price(*mkt, trade);
+		if (dynamic_cast<EuropeanOption*>(trade.get())) {
+			re.BlackPV = bsPricer->Price(*mkt, trade) * trade->getNotional();
+		}
+
 		results.push_back(re);
 	}
 
