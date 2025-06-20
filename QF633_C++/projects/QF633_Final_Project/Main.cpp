@@ -209,7 +209,7 @@ int main()
 		re.tradeInfo = trade->getType() + " " + trade->getUnderlying();
 		// add direction into pricing for options
 		re.PV = pricer->Price(*mkt, trade);
-		if (dynamic_cast<EuropeanOption*>(trade.get())) {
+		if (auto euro = dynamic_cast<EuropeanOption*>(trade.get())) {
 			re.BlackPV = bsPricer->Price(*mkt, trade) * trade->getNotional();
 		}
 

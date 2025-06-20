@@ -12,7 +12,7 @@ double Pricer::Price(const Market& mkt, std::shared_ptr<Trade> trade)
 	double pv;
 	if (trade->getType() == "TreeProduct") {
 		auto treePtr = dynamic_cast<TreeProduct*>(trade.get());
-		if (treePtr) { //check if cast is sucessful
+		if (treePtr) {
             int dir = 0;
             switch (treePtr->getDirection()) {
                 case DirectionType::Long:
@@ -21,7 +21,6 @@ double Pricer::Price(const Market& mkt, std::shared_ptr<Trade> trade)
                 case DirectionType::Short:
                     dir = -1;
                     break;
-                case DirectionType::NoneDir:
                 default:
                     dir = 0;
                     break;
@@ -95,14 +94,27 @@ double BlackScholesPricer::Price(const Market& mkt, std::shared_ptr<Trade> trade
 	double strike = euro->getStrike();
 	bool type =  euro->getOptionType();
 
+	int dir = 0;
+	switch (euro->getDirection()) {
+		case DirectionType::Long:
+			dir = 1;
+			break;
+		case DirectionType::Short:
+			dir = -1;
+			break;
+		default:
+			dir = 0;
+			break;
+	}
+
 	double d1 = (log(s0 / strike) + (rate + 0.5 * vol * vol) * T) / (vol * sqrt(T));
 	double d2 = d1 - vol * sqrt(T);
 	double df = exp(-rate * T);
 
 	if (type == OptionType::Call)
-		return s0 * norm_cdf(d1) - strike * df * norm_cdf(d2);
+		return dir * (s0 * norm_cdf(d1) - strike * df * norm_cdf(d2));
 	else if (type == OptionType::Put)
-		return strike * df * norm_cdf(-d2) - s0 * norm_cdf(-d1);
+		return dir * (strike * df * norm_cdf(-d2) - s0 * norm_cdf(-d1));
 	else
 		return 0.0;
 }
