@@ -42,7 +42,7 @@ double BinomialTreePricer::PriceTree(const Market& mkt, const TreeProduct& trade
 	double s0 = mkt.getStockPrice(trade.getUnderlying());
 	auto volCurve = mkt.getVolCurve("LOGVOL");
 	double vol = volCurve->getVol(trade.GetExpiry());
-	auto irCurve = mkt.getCurve("USD-SOFR");
+    auto irCurve = (trade.getUnderlying() == "STI") ? mkt.getCurve("SGD-SORA") : mkt.getCurve("USD-SOFR");
 	double rate = irCurve->getRate(trade.GetExpiry());
 	ModelSetup(s0, vol, rate, dt);
 
