@@ -19,7 +19,7 @@ public:
 		expiryDate = _expiry;
 		notional = _notional;
 		tradeDate = _start;		
-		rateCurve = "USD-SOFR"; // default rate curve, can be changed later
+		rateCurve = "USD-SOFR";
 		direction = _direction;
 	}
 	inline string getType() const { return tradeType; };
@@ -70,7 +70,5 @@ private:
 	Date expiryDate;
 };
 
-// TODO : implement tree pricer
-// TODO : implement direction
 
 #endif

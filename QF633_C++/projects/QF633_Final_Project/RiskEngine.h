@@ -109,7 +109,7 @@ public:
 	};
 
 private:
-	unordered_map<string, CurveDecorator> curveShocks; //tenor, shock
+	unordered_map<string, CurveDecorator> curveShocks; 
 	unordered_map<string, VolDecorator> volShocks;
 	unordered_map<string, PriceDecorator> priceShocks;
 

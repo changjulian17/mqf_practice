@@ -54,8 +54,6 @@ private:
 	double strike2;
 };
 
-// TODO : implement black-scholes pricer for european options
-// TODO : implement direction
 
 
 #endif

@@ -1,6 +1,7 @@
 #include <fstream>
 #include <ctime>
 #include <chrono>
+#include <map>
 
 #include "Market.h"
 #include "Pricer.h"
@@ -18,7 +19,7 @@ struct TradeResult
     string tradeInfo;
     double PV = 0;
     double BlackPV = 0; // Add this line
-    double DV01 = 0;
+    std::map<std::string, double> DV01; // Store all DV01s
     double Vega = 0;
 };
 
@@ -152,11 +153,18 @@ void outPutResult(const vector<TradeResult>& results)
     size_t i = 0;
     for (auto re : results) {
         i++;
+        string dv01_str = "{";
+        for (auto it = re.DV01.begin(); it != re.DV01.end(); ++it) {
+            if (it != re.DV01.begin()) dv01_str += ", ";
+            dv01_str += it->first + ":" + to_string(it->second);
+        }
+        dv01_str += "}";
+
         string row;
         row = to_string(re.id) + "; " + re.tradeInfo +
               "; PV:" + to_string(re.PV) +
               "; BlackPV:" + to_string(re.BlackPV) + // Add this line
-              "; Delta:" + to_string(re.DV01) +
+              "; Delta:" + dv01_str +
               "; Vega:" + to_string(re.Vega);
         output.push_back(row);
     }
@@ -207,7 +215,6 @@ int main()
 		TradeResult re;
 		re.id = i + 1;
 		re.tradeInfo = trade->getType() + " " + trade->getUnderlying();
-		// add direction into pricing for options
 		re.PV = pricer->Price(*mkt, trade);
 		if (auto euro = dynamic_cast<EuropeanOption*>(trade.get())) {
 			re.BlackPV = bsPricer->Price(*mkt, trade) * trade->getNotional();
@@ -227,51 +234,74 @@ int main()
 	double price_shock = 1.0; // shock in abs price of stock
 
 	// example 1, simple example of computing one point dv01 for one swap
-	string risk_id = "USD-SOFR:DV01:DEAL 01";
-	double shockUp = 0.0001;
-	double shockDown = -0.0001;
-	auto testShockUp = MarketShock();
-	testShockUp.market_id = "USD-SOFR";
-	testShockUp.shock = make_pair(Date(), shockUp);
-	auto testShockDown = MarketShock();
-	testShockDown.market_id = "USD-SOFR";
-	testShockDown.shock = make_pair(Date(), shockDown);
-	auto shockedUpCurveUp = CurveDecorator(*mkt, testShockUp);
+	// string risk_id = "USD-SOFR:DV01:DEAL 01";
+	// double shockUp = 0.0001;
+	// double shockDown = -0.0001;
+	// auto testShockUp = MarketShock();
+	// testShockUp.market_id = "USD-SOFR";
+	// testShockUp.shock = make_pair(Date(), shockUp);
+	// auto testShockDown = MarketShock();
+	// testShockDown.market_id = "USD-SOFR";
+	// testShockDown.shock = make_pair(Date(), shockDown);
+	// auto shockedUpCurveUp = CurveDecorator(*mkt, testShockUp);
 
-	unordered_map<string, double> thisDealDv01;
-	double pv_up, pv_down;
-	auto m_up = shockedUpCurveUp.getMarketUp();
-	auto m_down = shockedUpCurveUp.getMarketDown();
-	pv_up = swap->Pv(m_up);
-	pv_down = swap->Pv(m_down);
-	double dv01 = (pv_up - pv_down) / 2.0;
-	thisDealDv01.emplace(risk_id, dv01);
+	// unordered_map<string, double> thisDealDv01;
+	// double pv_up, pv_down;
+	// auto m_up = shockedUpCurveUp.getMarketUp();
+	// auto m_down = shockedUpCurveUp.getMarketDown();
+	// pv_up = swap->Pv(m_up);
+	// pv_down = swap->Pv(m_down);
+	// double dv01 = (pv_up - pv_down) / 2.0;
+	// thisDealDv01.emplace(risk_id, dv01);
 
 	//example2, using risk engine to compute full set of dv01 for a swap
 	RiskEngine re(*mkt, curve_shock, vol_shock, price_shock);
-	re.computeRisk("dv01", swap, true);
-	//  TODO: add dv01 for all swaps and add to output text files
-	// TODO: add vega for all options and add to output text files
-	auto dv01_of_swap = re.getResult();
+	// Compute DV01 for all instruments in the portfolio and update Delta in results
+	for (size_t i = 0; i < myPortfolio.size(); ++i) {
+		auto& trade = myPortfolio[i];
+		double dv01 = 0.0;
+
+		string type = trade->getType();
+		re.computeRisk("dv01", trade, true);
+		auto risk_re1 = re.getResult();
+		std::map<std::string, double> dv01_map;
+		for (const auto& kv : risk_re1) {
+			if (kv.first == "USD-SOFR" || kv.first == "SGD-SORA") {
+				dv01_map[kv.first] = kv.second;
+			}
+		}
+
+		re.computeRisk("vega", trade, true);
+		auto risk_re2 = re.getResult();
+		std::map<std::string, double> vega_map;
+		for (const auto& kv : risk_re2) {
+			if (kv.first == "LOGVOL") {
+				vega_map[kv.first] = kv.second;
+			}
+		}
+
+		results[i].DV01 = dv01_map;
+		results[i].Vega = vega_map.begin()->second; 
+	}
 
 	//example 3, demo using thread pool
 	if (false){
 		map<string, double> swapDv01;
 		ThreadPool pool(4);
 	
-		auto pv_job = [&swapDv01, risk_id, &swap, &m_up, &m_down]() {
-		cout << "Task is running on thread: " << this_thread::get_id() << endl;
-		auto pricer = std::make_unique<CRRBinomialTreePricer>(100);
-		double pv_u = pricer->Price(m_up, swap);
-		double pv_d = pricer->Price(m_down, swap);
-		double dv01 = (pv_u - pv_d) / 2.;
-		swapDv01.emplace(std::make_pair(risk_id, dv01));
-		this_thread::sleep_for(chrono::milliseconds(100));
-		};
+		// auto pv_job = [&swapDv01, risk_id, &swap, &m_up, &m_down]() {
+		// cout << "Task is running on thread: " << this_thread::get_id() << endl;
+		// auto pricer = std::make_unique<CRRBinomialTreePricer>(100);
+		// double pv_u = pricer->Price(m_up, swap);
+		// double pv_d = pricer->Price(m_down, swap);
+		// double dv01 = (pv_u - pv_d) / 2.;
+		// swapDv01.emplace(std::make_pair(risk_id, dv01));
+		// this_thread::sleep_for(chrono::milliseconds(100));
+		// };
 
-		for (int i = 0; i < 5; ++i) {
-			pool.enqueue(pv_job);
-		}
+		// for (int i = 0; i < 5; ++i) {
+		// 	pool.enqueue(pv_job);
+		// }
 
 		// auto pv_job = [&swapDv01, risk_id, &eCall, &m_up, &m_down]() {
 		// cout << "Task is running on thread: " << this_thread::get_id() << endl;
@@ -289,6 +319,28 @@ int main()
 	}
 
 	// step 5, output result to file
+	// --- Compute totals ---
+	TradeResult total;
+	total.id = 1000;
+	total.tradeInfo = "Total";
+	total.PV = 0.0;
+	total.BlackPV = 0.0;
+	total.Vega = 0.0;
+	std::map<std::string, double> totalDV01;
+
+	for (const auto& re : results) {
+		total.PV += re.PV;
+		total.BlackPV += re.BlackPV;
+		total.Vega += re.Vega;
+		for (const auto& kv : re.DV01) {
+			totalDV01[kv.first] += kv.second;
+		}
+	}
+	total.DV01 = totalDV01;
+
+	// Append the total row to results
+	results.push_back(total);
+
 	outPutResult(results);
 
 	//final

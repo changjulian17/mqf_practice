@@ -1,8 +1,10 @@
 #include "RiskEngine.h"
+#include "Pricer.h"
 
 //  TODO not complete yet, need to add price shock and multi-threading
 void RiskEngine::computeRisk(string riskType, shared_ptr<Trade> trade, bool singleThread)
 {
+	auto pricer = make_shared<CRRBinomialTreePricer>(50);
 	result.clear();
 	if (singleThread) {
 		if (riskType == "dv01") {
@@ -10,8 +12,8 @@ void RiskEngine::computeRisk(string riskType, shared_ptr<Trade> trade, bool sing
 				string market_id = kv.first;
 				auto mkt_u = kv.second.getMarketUp();
 				auto mkt_d = kv.second.getMarketDown();
-				double pv_up = trade->Pv(mkt_u);
-				double pv_down = trade->Pv(mkt_d);
+				double pv_up = pricer->Price(mkt_u, trade);
+				double pv_down = pricer->Price(mkt_d, trade);
 				double dv01 = (pv_up - pv_down) / 2.0;
 				result.emplace(market_id, dv01);
 			}
@@ -22,8 +24,8 @@ void RiskEngine::computeRisk(string riskType, shared_ptr<Trade> trade, bool sing
 				string market_id = kv.first;
 				auto mkt = kv.second.getOriginMarket();
 				auto mkt_s = kv.second.getMarket();
-				double pv = trade->Pv(mkt);
-				double pv_up = trade->Pv(mkt_s);
+				double pv = pricer->Price(mkt, trade);
+				double pv_up = pricer->Price(mkt_s, trade);
 				double dv01 = (pv_up - pv);
 				result.emplace(market_id, dv01);
 			}
@@ -36,8 +38,9 @@ void RiskEngine::computeRisk(string riskType, shared_ptr<Trade> trade, bool sing
 	}
 	else {
 		auto pv_task = [](shared_ptr<Trade> trade, string id, const Market& mkt_up, const Market& mkt_down) {
-			double pv_up = trade->Pv(mkt_up);
-			double pv_down = trade->Pv(mkt_down);
+			auto pricer = make_shared<CRRBinomialTreePricer>(50);
+			double pv_up = pricer->Price(mkt_up, trade);
+			double pv_down = pricer->Price(mkt_down, trade);
 			double risk = (pv_up - pv_down) / 2.0;
 			return std::make_pair(id, risk);
 			};
