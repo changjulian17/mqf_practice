@@ -1,7 +1,6 @@
 #include "RiskEngine.h"
 #include "Pricer.h"
 
-//  TODO not complete yet, need to add price shock and multi-threading
 void RiskEngine::computeRisk(string riskType, shared_ptr<Trade> trade, bool singleThread)
 {
 	auto pricer = make_shared<CRRBinomialTreePricer>(50);
