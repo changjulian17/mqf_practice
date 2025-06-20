@@ -13,7 +13,20 @@ double Pricer::Price(const Market& mkt, std::shared_ptr<Trade> trade)
 	if (trade->getType() == "TreeProduct") {
 		auto treePtr = dynamic_cast<TreeProduct*>(trade.get());
 		if (treePtr) { //check if cast is sucessful
-			pv = PriceTree(mkt, *treePtr) * trade->getNotional();
+            int dir = 0;
+            switch (treePtr->getDirection()) {
+                case DirectionType::Long:
+                    dir = 1;
+                    break;
+                case DirectionType::Short:
+                    dir = -1;
+                    break;
+                case DirectionType::NoneDir:
+                default:
+                    dir = 0;
+                    break;
+            }
+            pv = dir * PriceTree(mkt, *treePtr) * trade->getNotional();
 		}
 	}
 	else {
