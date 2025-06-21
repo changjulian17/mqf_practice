@@ -1,8 +1,4 @@
-#ifndef _PRICER
-#define _PRICER
-
-#include <vector>
-#include <cmath>
+#pragma once
 
 #include "Trade.h"
 #include "TreeProduct.h"
@@ -82,5 +78,3 @@ class BlackScholesPricer : public Pricer {
 public:
     double Price(const Market& mkt, std::shared_ptr<Trade> trade);
 };
-
-#endif

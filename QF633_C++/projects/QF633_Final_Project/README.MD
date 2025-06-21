@@ -2,21 +2,20 @@
 
 ## Project Overview
 
-QF633_FINAL_PROJECT is a C++ analytics engine for pricing and risk management of fixed income and equity derivative products. It supports swaps, bonds, and tree-based derivatives, providing both present value (PV) and risk sensitivities (Delta, Vega) using multiple pricing models (tree and Black-Scholes).
+QF633_FINAL_PROJECT is a C++ analytics engine for pricing and risk management of fixed income and equity derivatives. It supports swaps, bonds, and tree-based options, providing present value (PV) and risk sensitivities (Delta, Vega) using multiple pricing models (tree and Black-Scholes). The project applies Factory and Decorator design patterns.QF633_FINAL_PROJECT is a C++ analytics engine for pricing and risk management of fixed income and equity derivative products. It supports swaps, bonds, and tree-based derivatives, providing both present value (PV) and risk sensitivities (Delta, Vega) using multiple pricing models (tree and Black-Scholes). Applied Factory and Decoraetor design pattern.
 
 ---
 
 ## Execution Summary
 
-- **Input:**  
+- **Input:**
   The engine reads market data (curves, prices, volatility) and a list of trades from text files.
-- **Processing:**  
-  For each trade, it computes:
+- **Processing:**For each trade, it computes:
   - Present Value (PV) using the appropriate pricing model
   - Black-Scholes PV (BlackPV) for eligible products
   - Delta (per risk factor)
   - Vega
-- **Output:**  
+- **Output:**
   Results are written to `output.txt` in a semicolon-delimited format, with a summary line at the end.
 
 **Sample Output:**
@@ -42,6 +41,7 @@ Summary;Total;PV;Delta;Vega
 ### Input Files
 
 Place these files in the project directory:
+
 - `usd_curve.txt` — USD interest rate curve
 - `sgd_curve.txt` — SGD interest rate curve
 - `bondPrice.txt` — Bond prices
@@ -57,10 +57,11 @@ Place these files in the project directory:
    g++ -std=c++17 -o Main Main.cpp Bond.cpp Swap.cpp Pricer.cpp RiskEngine.cpp Market.cpp MarketDataUtils.cpp PortfolioUtils.cpp Date.cpp
    ```
 3. Run the executable:
-  ./Main
+   ./Main
 4. Check `output.txt` for results
 
 ### File Structure
+
 Main.cpp — Main program logic
 Bond.cpp, Bond.h — Bond instrument
 Swap.cpp, Swap.h — Swap instrument
@@ -74,6 +75,6 @@ Date.cpp, Date.h — Date utilities
 Types.h — Common types
 output.txt — Output results
 
-
 ## Author
+
 https://github.com/changjulian17
