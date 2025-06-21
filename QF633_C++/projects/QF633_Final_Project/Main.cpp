@@ -9,167 +9,11 @@
 #include "Factory.h"
 #include "thread_pool.h"
 #include "helper.h"
-
+#include "PortfolioUtils.h"
+#include "MarketDataUtils.h"
 
 using namespace std;
 
-struct TradeResult
-{
-    size_t id;
-    string tradeInfo;
-    double PV = 0;
-    double BlackPV = 0; // Add this line
-    std::map<std::string, double> DV01; // Store all DV01s
-    double Vega = 0;
-};
-
-void loadTrade(vector<shared_ptr<Trade>>& myPortfolio)
-{
-    string fileName = "trade.txt";
-    string header;
-    vector<string> tradeData;
-    readFromFile(fileName, header, tradeData);
-    vector<string> tradeHeader = split(header, ";");
-    for (size_t i = 0; i < tradeData.size(); i++) {
-        vector<string> tradeInfo = split(tradeData[i], ";");
-        int id = stoi(tradeInfo[0]);
-        string type = tradeInfo[1];
-        Date tradeDate = Date(tradeInfo[2]);
-        Date startDate = Date(tradeInfo[3]);
-        Date endDate = Date(tradeInfo[4]);
-        double notional = stod(tradeInfo[5]);
-        string underlying = tradeInfo[6];
-        double rate = stod(tradeInfo[7]);
-        double strike = stod(tradeInfo[8]);
-        double freq = stod(tradeInfo[9]);
-        string optionTypeStr = tradeInfo[10];
-        string directionStr = tradeInfo[11];
-		directionStr.erase(std::remove(directionStr.begin(), directionStr.end(), '\r'), directionStr.end());
-
-        OptionType optionType = OptionType::None;
-        if (optionTypeStr == "call")
-            optionType = OptionType::Call;
-        else if (optionTypeStr == "put")
-            optionType = OptionType::Put;
-        else
-            optionType = OptionType::None;
-
-        DirectionType direction = DirectionType::NoneDir;
-        if (directionStr == "pay")
-            direction = DirectionType::Pay;
-        else if (directionStr == "receive")
-            direction = DirectionType::Receive;
-        else if (directionStr == "long")
-            direction = DirectionType::Long;
-        else if (directionStr == "short")
-            direction = DirectionType::Short;
-		else
-			direction = DirectionType::NoneDir;
-
-        shared_ptr<Trade> trade;
-        if (type == "bond") {
-            auto bFactory = std::make_unique<BondFactory>();
-            trade = bFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
-        }
-        else if (type == "swap") {
-            auto sFactory = std::make_unique<SwapFactory>();
-            trade = sFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
-        }
-        else if (type == "european") {
-            auto eFactory = std::make_unique<EurOptFactory>();
-            trade = eFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
-        }
-        else if (type == "american") {
-            auto aFactory = std::make_unique<AmericanOptFactory>();
-            trade = aFactory->createTrade(underlying, startDate, endDate, notional, rate, strike, freq, optionType, direction);
-        }
-        // Optionally, you can store direction in a TradeResult or attach to Trade if needed
-        myPortfolio.push_back(trade);
-    }
-}
-
-void loadIrCurve(Market& mkt, const string& fileName, const string& curveName)
-{
-	auto curve = make_shared<RateCurve>(curveName);
-	string header;
-	vector<string> curveData;
-	readFromFile(fileName, header, curveData);
-	Date valueDate = mkt.asOf; // use market date as value date for the curve
-	curve->_asOf = valueDate;
-	for (size_t i = 0; i < curveData.size(); i++) {
-		vector<string> rateInfo = split(curveData[i], ":");
-		string tenor = rateInfo[0];
-		double rate = stod(rateInfo[1].substr(0, rateInfo[1].size() - 1)) / 100;
-		Date tenorDate = dateAddTenor(valueDate, tenor);
-		curve->addRate(tenorDate, rate);
-	}
-	mkt.addCurve(curveName, curve);
-}
-
-void loadVolCurve(Market& mkt, const string& fileName, const string& curveName)
-{
-	auto curve = make_shared<VolCurve>(curveName);
-	string header;
-	vector<string> curveData;
-	readFromFile(fileName, header, curveData);
-	Date valueDate = mkt.asOf; // use market date as value date for the curve
-	curve->_asOf = valueDate;
-	for (size_t i = 0; i < curveData.size(); i++) {
-		vector<string> rateInfo = split(curveData[i], ":");
-		string tenor = rateInfo[0];
-		double vol = stod(rateInfo[1].substr(0, rateInfo[1].size() - 1)) / 100;
-		Date tenorDate = dateAddTenor(valueDate, tenor);
-		curve->addVol(tenorDate, vol);
-	}
-	mkt.addVolCurve(curveName, curve);
-}
-
-void loadStockPrices(Market& mkt, const string& fileName) {
-    vector<string> stockData;
-	string lineText;
-	ifstream input_file(fileName);
-	if (!input_file.is_open()) {
-		cerr << "Error: Could not open file '" << fileName << "'" << endl;
-	}
-
-	// body
-	while (getline(input_file, lineText)) {
-		stockData.push_back(lineText);
-	}
-	input_file.close();
-    for (const auto& line : stockData) {
-        vector<string> tokens = split(line, ":");
-        if (tokens.size() >= 2) {
-            string ticker = tokens[0];
-            double price = stod(tokens[1]);
-            mkt.addStockPrice(ticker, price);
-        }
-    }
-}
-
-void outPutResult(const vector<TradeResult>& results)
-{
-    vector<string> output;
-    size_t i = 0;
-    for (auto re : results) {
-        i++;
-        string dv01_str = "{";
-        for (auto it = re.DV01.begin(); it != re.DV01.end(); ++it) {
-            if (it != re.DV01.begin()) dv01_str += ", ";
-            dv01_str += it->first + ":" + to_string(it->second);
-        }
-        dv01_str += "}";
-
-        string row;
-        row = to_string(re.id) + "; " + re.tradeInfo +
-              "; PV:" + to_string(re.PV) +
-              "; BlackPV:" + to_string(re.BlackPV) + // Add this line
-              "; Delta:" + dv01_str +
-              "; Vega:" + to_string(re.Vega);
-        output.push_back(row);
-    }
-    outputToFile("output.txt", output);
-}
 
 int main()
 {
@@ -206,22 +50,11 @@ int main()
 	auto swap = sFactory->createTrade("USD-SOFR", Date(2024, 1, 1), Date(2034, 1, 1), -1000000, .05, 0.03, 1.0, OptionType::None, DirectionType::Pay);
 	auto eCall = eFactory->createTrade("APPL", Date(2024, 1, 1), Date(2025, 1, 1), 10000, 0, 530, 0, OptionType::Call, DirectionType::Long);
 
-	// step 3, creat a pricer and price the portfolio, output the pricing result of each deal 
+	// step 3, create a pricer and price the portfolio, output the pricing result of each deal 
 	vector<TradeResult> results;
 	auto pricer = make_shared<CRRBinomialTreePricer>(50);
 	auto bsPricer = std::make_shared<BlackScholesPricer>();
-	for (size_t i = 0; i < myPortfolio.size(); i++) {
-		auto& trade = myPortfolio[i];
-		TradeResult re;
-		re.id = i + 1;
-		re.tradeInfo = trade->getType() + " " + trade->getUnderlying();
-		re.PV = pricer->Price(*mkt, trade);
-		if (auto euro = dynamic_cast<EuropeanOption*>(trade.get())) {
-			re.BlackPV = bsPricer->Price(*mkt, trade) * trade->getNotional();
-		}
-
-		results.push_back(re);
-	}
+	pricePortfolio(results, myPortfolio, pricer, bsPricer, mkt);
 
 	//task 4, compute the Greeks of DV01, and Vega risk as of market date 1
 	// 4.1 compute risk using risk engine
@@ -257,32 +90,7 @@ int main()
 	//example2, using risk engine to compute full set of dv01 for a swap
 	RiskEngine re(*mkt, curve_shock, vol_shock, price_shock);
 	// Compute DV01 for all instruments in the portfolio and update Delta in results
-	for (size_t i = 0; i < myPortfolio.size(); ++i) {
-		auto& trade = myPortfolio[i];
-		double dv01 = 0.0;
-
-		string type = trade->getType();
-		re.computeRisk("dv01", trade, true);
-		auto risk_re1 = re.getResult();
-		std::map<std::string, double> dv01_map;
-		for (const auto& kv : risk_re1) {
-			if (kv.first == "USD-SOFR" || kv.first == "SGD-SORA") {
-				dv01_map[kv.first] = kv.second;
-			}
-		}
-
-		re.computeRisk("vega", trade, true);
-		auto risk_re2 = re.getResult();
-		std::map<std::string, double> vega_map;
-		for (const auto& kv : risk_re2) {
-			if (kv.first == "LOGVOL") {
-				vega_map[kv.first] = kv.second;
-			}
-		}
-
-		results[i].DV01 = dv01_map;
-		results[i].Vega = vega_map.begin()->second; 
-	}
+	computeGreeksForPortfolio(results, myPortfolio, re);
 
 	//example 3, demo using thread pool
 	if (false){
@@ -320,27 +128,8 @@ int main()
 
 	// step 5, output result to file
 	// --- Compute totals ---
-	TradeResult total;
-	total.id = 1000;
-	total.tradeInfo = "Total";
-	total.PV = 0.0;
-	total.BlackPV = 0.0;
-	total.Vega = 0.0;
-	std::map<std::string, double> totalDV01;
-
-	for (const auto& re : results) {
-		total.PV += re.PV;
-		total.BlackPV += re.BlackPV;
-		total.Vega += re.Vega;
-		for (const auto& kv : re.DV01) {
-			totalDV01[kv.first] += kv.second;
-		}
-	}
-	total.DV01 = totalDV01;
-
-	// Append the total row to results
+	TradeResult total = computePortfolioTotals(results);
 	results.push_back(total);
-
 	outPutResult(results);
 
 	//final

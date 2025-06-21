@@ -1,10 +1,20 @@
 #pragma once
-#include<string>
+#include <string>
+#include <map>
 #include "Date.h"
 
 using namespace std;
 
 class Market;
+
+struct TradeResult {
+    size_t id;
+    std::string tradeInfo;
+    double PV = 0;
+    double BlackPV = 0;
+    std::map<std::string, double> DV01;
+    double Vega = 0;
+};
 
 class Trade {
 public:
