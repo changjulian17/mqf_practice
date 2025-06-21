@@ -26,13 +26,7 @@ int main()
 
 	// step1: create market data and load curve, vol and prices into market data
 	auto mkt = make_shared<Market>(valueDate);
-	loadIrCurve(*mkt, "usd_curve.txt", "USD-SOFR");
-	loadIrCurve(*mkt, "sgd_curve.txt", "SGD-SORA");
-	loadVolCurve(*mkt, "vol.txt", "LOGVOL");
-	loadStockPrices(*mkt, "stockPrice.txt");
-	// mkt->addStockPrice("APPL", 652.0);
-	// mkt->addStockPrice("SP500", 5035.7);
-	// mkt->addStockPrice("STI", 3420);
+	mkt->loadDefaultCurves();
 
 	mkt->Print();
 	auto usdCurve = mkt->getCurve("USD-SOFR");

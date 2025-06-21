@@ -70,6 +70,8 @@ public:
 	void addVolCurve(const std::string& name, shared_ptr<VolCurve> vol);//implement this
 	void addBondPrice(const std::string& bondName, double price);//implement this
 	void addStockPrice(const std::string& stockName, double price);//implement this
+	void loadFromConfig(const std::string& configFile);
+	void loadDefaultCurves();
 
 	inline void shockPrice(const string& underlying, double shock) { stockPrices[underlying] += shock; }
 	inline shared_ptr<RateCurve> getCurve(const string& name) const { return curves.at(name); };

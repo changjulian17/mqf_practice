@@ -1,6 +1,21 @@
 #include "Market.h"
+#include "helper.h"
+#include "MarketDataUtils.h"
+#include <vector>
+#include <string>
 
 using namespace std;
+
+const std::vector<std::pair<std::string, std::string>> RATE_CURVES = {
+    {"usd_curve.txt", "USD-SOFR"},
+    {"sgd_curve.txt", "SGD-SORA"}
+};
+
+const std::vector<std::pair<std::string, std::string>> VOL_CURVES = {
+    {"vol.txt", "LOGVOL"}
+};
+
+const std::string STOCK_PRICES_FILE = "stockPrice.txt";
 
 namespace imp {
 	// x0 < x < x1
@@ -155,4 +170,16 @@ std::istream& operator>>(std::istream& is, Market& mkt)
 {
 	is >> mkt.asOf;
 	return is;
+}
+void Market::loadDefaultCurves() {
+    // Load all rate curves from the list
+    for (const auto& rc : RATE_CURVES) {
+        loadIrCurve(*this, rc.first, rc.second);
+    }
+    // Load all vol curves from the list
+    for (const auto& vc : VOL_CURVES) {
+        loadVolCurve(*this, vc.first, vc.second);
+    }
+    // Load stock prices
+    loadStockPrices(*this, STOCK_PRICES_FILE);
 }
