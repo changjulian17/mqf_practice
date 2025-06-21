@@ -1,11 +1,5 @@
-#ifndef _AMERICAN_TRADE
-#define _AMERICAN_TRADE
-
+#pragma once
 #include <cassert> 
-
-#include "TreeProduct.h"
-#include "Types.h"
-#include "Payoff.h"
 
 class AmericanOption : public TreeProduct {
 public:
@@ -69,6 +63,3 @@ private:
 	double strike2;
 	Date expiryDate;
 };
-
-
-#endif

@@ -1,10 +1,5 @@
-#ifndef MARKET_H
-#define MARKET_H
+#pragma once
 
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <memory>
 #include "Date.h"
 
 using namespace std;
@@ -95,4 +90,3 @@ private:
 std::ostream& operator<<(std::ostream& os, const Market& obj);
 std::istream& operator>>(std::istream& is, Market& obj);
 
-#endif

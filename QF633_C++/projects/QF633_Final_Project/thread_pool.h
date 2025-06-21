@@ -1,11 +1,4 @@
-// C++ Program to demonstrate thread pooling 
-
-#include <condition_variable> 
-#include <functional> 
-#include <iostream> 
-#include <mutex> 
-#include <queue> 
-#include <thread> 
+#pragma once
 
 using namespace std; 
 

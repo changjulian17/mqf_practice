@@ -1,12 +1,7 @@
-#ifndef HELPER_H
-#define HELPER_H
+#pragma once
 
-#include <string>
-#include <vector>
 #include <iostream>
 #include <fstream>
-#include <locale> // tolower
-
 
 using namespace std;
 
@@ -91,5 +86,3 @@ void inline genSchedule(double start, double end, double freq, vector<double>& s
 
 	std::reverse(schedule.begin(), schedule.end());
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 enum OptionType 
 {   
@@ -18,4 +17,3 @@ enum DirectionType {
     NoneDir
 };
 
-#endif

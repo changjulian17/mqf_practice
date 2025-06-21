@@ -1,7 +1,5 @@
-#ifndef _TREE_PRODUCT_H
-#define _TREE_PRODUCT_H
-#include "Date.h"
-#include "Trade.h"
+#pragma once
+
 #include "Types.h"
 
 //option type of trade, will be priced using tree model
@@ -14,5 +12,3 @@ public:
     virtual DirectionType getDirection() const { return DirectionType::NoneDir; }
     double Pv(const Market& mkt) const { return 0; }; 
 };
-
-#endif

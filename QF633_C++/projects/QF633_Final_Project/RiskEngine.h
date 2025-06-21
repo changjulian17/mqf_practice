@@ -1,10 +1,6 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <map>
-#include <unordered_map>
-#include <future>
 
+#include <future>
 #include "Trade.h"
 #include "Market.h"
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Trade.h"
 #include "Types.h"
 

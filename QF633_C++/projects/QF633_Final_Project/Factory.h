@@ -1,10 +1,9 @@
 #pragma once
-#include <iostream>
+
 #include "Swap.h"
 #include "Bond.h"
 #include "EuropeanTrade.h"
 #include "AmericanTrade.h"
-#include "Types.h" // Add this for DirectionType
 
 // Abstract creator class
 class TradeFactory {

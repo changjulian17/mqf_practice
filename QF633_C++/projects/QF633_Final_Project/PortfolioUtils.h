@@ -1,7 +1,5 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include "Trade.h"
+
 #include "Pricer.h"
 #include "RiskEngine.h"
 

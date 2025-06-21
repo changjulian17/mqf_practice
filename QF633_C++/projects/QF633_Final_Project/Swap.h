@@ -1,6 +1,6 @@
 #pragma once
+
 #include "Trade.h"
-#include "helper.h"
 #include "Types.h"
 
 class Swap : public Trade {
