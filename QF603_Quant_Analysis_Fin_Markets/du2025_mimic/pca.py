@@ -103,3 +103,46 @@ plt.ylabel('Explained Variance Ratio')
 plt.grid(True)
 plt.legend()
 plt.show()
+
+# -----------------------------
+# 4. Neutralization (industry + size)
+# -----------------------------
+mktcap = data * 1e6  # fake market cap proxy (price * 1m shares)
+
+neutralized = pd.DataFrame(index=factor_neutralized_sys.index, columns=factor_neutralized_sys.columns)
+
+for t in factor_neutralized_sys.index:
+    f = factor_neutralized_sys.loc[t].dropna()
+    if len(f) < 3: 
+        continue
+
+    # Features: industry dummies + log(MarketCap)
+    tickers = [col[1] for col in f.index]
+    sec = sector_df.reindex(tickers)  # Use only ticker level for sector mapping
+    dummies = pd.get_dummies(sec)
+    size = np.log(mktcap.loc[t, tickers])
+    X = pd.concat([dummies, 
+                size.rename('log_size'), 
+                (size**2).rename('log_size2')], axis=1).fillna(0)
+    X = X.reindex(tickers)  # Ensure X rows match f index order
+
+    model = LinearRegression().fit(X, f)
+    fitted = model.predict(X)
+    neutralized.loc[t, f.index] = f - fitted
+
+# -----------------------------
+# 5. Recompute IC after neutralization
+# -----------------------------
+ICs_neut = []
+for t in neutralized.dropna(how='all').index:
+    f = neutralized.loc[t].dropna()
+    r = fwd_returns.loc[t].reindex(tickers)
+    if len(f) > 2 and len(r) == len(f):
+        ICs_neut.append(spearmanr(f, r).correlation)
+ICs_neut = pd.Series(ICs_neut, index=neutralized.index[:len(ICs_neut)])
+
+mean_IC_neut = ICs_neut.mean()
+IR_neut = mean_IC_neut / ICs_neut.std()
+
+print("\nNeutralized Factor Results")
+print(f"Mean IC: {mean_IC_neut:.4f}, IR: {IR_neut:.4f}")
