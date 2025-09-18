@@ -114,8 +114,22 @@ plt.savefig('data/results/scree_plot.png')
 # -----------------------------
 # 4. Neutralization (industry + size)
 # -----------------------------
-mktcap = data * 1e6  # fake market cap proxy (price * 1m shares)
 
+# --- Adaptive Neutralization Strength ---
+# Parameters
+alpha_0 = 0
+beta_vol = 0
+window = 20
+long_window = 252
+
+# Calculate volatility
+short_vol = returns.rolling(window).std()
+long_vol = returns.rolling(long_window).std().mean()
+
+# Calculate adaptive strength for each date
+alpha_t = alpha_0 * (1 + beta_vol * (short_vol - long_vol) / long_vol)
+
+mktcap = data * 1e6  # fake market cap proxy (price * 1m shares)
 neutralized = pd.DataFrame(index=factor_neutralized_sys.index, columns=factor_neutralized_sys.columns)
 
 for t in factor_neutralized_sys.index:
@@ -135,7 +149,10 @@ for t in factor_neutralized_sys.index:
 
     model = LinearRegression().fit(X, f)
     fitted = model.predict(X)
-    neutralized.loc[t, f.index] = f - fitted
+    # Use adaptive strength
+    # strength = alpha_t.loc[t] if t in alpha_t.index else alpha_0 
+    strength = 1
+    neutralized.loc[t, f.index] = f - strength * (f - fitted)
 
 # -----------------------------
 # 5. Recompute IC after neutralization
