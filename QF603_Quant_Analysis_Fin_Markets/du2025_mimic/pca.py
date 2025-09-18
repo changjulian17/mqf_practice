@@ -64,9 +64,11 @@ print("Raw Factor Results")
 for name, res in results.items():
     print(f"{name}: Mean IC = {res['mean_IC']:.4f}, IR = {res['IR']:.4f}")
 
+
 # -----------------------------
-# 3. PCA on all factors in one go (systematic risk)
+# 3. PCA on factor loadings (systematic risk)
 # -----------------------------
+# Assume `factor` is a DataFrame: index=dates, columns=stocks
 window = 20  # rolling window length in days
 factor_std_dict = {fname: (factor - factor.mean()) / factor.std() for fname, factor in factors.items()}
 
@@ -85,8 +87,13 @@ for date in stacked.index[window-1:]:
     scores = window_data.values @ pc1 @ pc1.T
     scores_last = pd.Series(scores[-1], index=window_data.columns)
     factor_neutralized_sys.loc[date] = window_data.iloc[-1] - scores_last
-
-print("PCA-neutralized factors computed for all factors together.")
+# Resultant rows after PCA-based neutralization
+print('Start out with so many rows:')
+print(factor.shape)
+print('After factor construction (momentum, vol, rev):')
+print(stacked.dropna().shape)
+print('After PCA-based systematic risk neutralization, uses 20 day rolling window:')
+print(factor_neutralized_sys.dropna().shape)
 
 # Scree plot: explained variance for each principal component
 pca_full = PCA()
@@ -102,7 +109,7 @@ plt.xlabel('Principal Component')
 plt.ylabel('Explained Variance Ratio')
 plt.grid(True)
 plt.legend()
-plt.show()
+plt.savefig('data/results/scree_plot.png')
 
 # -----------------------------
 # 4. Neutralization (industry + size)
@@ -133,16 +140,21 @@ for t in factor_neutralized_sys.index:
 # -----------------------------
 # 5. Recompute IC after neutralization
 # -----------------------------
-ICs_neut = []
-for t in neutralized.dropna(how='all').index:
-    f = neutralized.loc[t].dropna()
-    r = fwd_returns.loc[t].reindex(tickers)
-    if len(f) > 2 and len(r) == len(f):
-        ICs_neut.append(spearmanr(f, r).correlation)
-ICs_neut = pd.Series(ICs_neut, index=neutralized.index[:len(ICs_neut)])
+# For MultiIndex DataFrame: columns = (factor, stock)
+results = {}
+for factor_name in set([col[0] for col in neutralized.columns]):
+    factor_df = neutralized[factor_name].dropna(how='all', axis=0)
+    ICs = []
+    for t in factor_df.index:
+        f = factor_df.loc[t].dropna()
+        r = fwd_returns.loc[t].reindex(f.index).dropna()
+        if len(f) > 2 and len(r) == len(f):
+            ICs.append(spearmanr(f, r).correlation)
+    ICs = pd.Series(ICs, index=factor_df.index[:len(ICs)])
+    mean_IC = ICs.mean()
+    IR = mean_IC / ICs.std() if ICs.std() != 0 else np.nan
+    results[factor_name] = {'mean_IC': mean_IC, 'IR': IR}
 
-mean_IC_neut = ICs_neut.mean()
-IR_neut = mean_IC_neut / ICs_neut.std()
-
-print("\nNeutralized Factor Results")
-print(f"Mean IC: {mean_IC_neut:.4f}, IR: {IR_neut:.4f}")
+print("Raw Factor Results")
+for name, res in results.items():
+    print(f"{name}: Mean IC = {res['mean_IC']:.4f}, IR = {res['IR']:.4f}")
