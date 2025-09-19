@@ -9,6 +9,7 @@ from sklearn.linear_model import LinearRegression
 from scipy.stats import spearmanr
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
+import lightgbm as lgb
 
 # Example tickers + sector info
 tickers = ["AAPL", "MSFT", "AMZN", "GOOG", "META", "JPM", "GS", "XOM", "CVX", "TSLA"]
@@ -63,7 +64,6 @@ for name, factor in factors.items():
 print("Raw Factor Results")
 for name, res in results.items():
     print(f"{name}: Mean IC = {res['mean_IC']:.4f}, IR = {res['IR']:.4f}")
-
 
 # -----------------------------
 # 3. PCA on factor loadings (systematic risk)
@@ -121,16 +121,14 @@ alpha_0 = 0
 beta_vol = 0
 window = 20
 long_window = 252
-
 # Calculate volatility
 short_vol = returns.rolling(window).std()
 long_vol = returns.rolling(long_window).std().mean()
-
 # Calculate adaptive strength for each date
 alpha_t = alpha_0 * (1 + beta_vol * (short_vol - long_vol) / long_vol)
 
 mktcap = data * 1e6  # fake market cap proxy (price * 1m shares)
-neutralized = pd.DataFrame(index=factor_neutralized_sys.index, columns=factor_neutralized_sys.columns)
+neutralized = pd.DataFrame(index=factor_neutralized_sys.index, columns=factor_neutralized_sys.columns, dtype=float)
 
 for t in factor_neutralized_sys.index:
     f = factor_neutralized_sys.loc[t].dropna()
@@ -150,9 +148,10 @@ for t in factor_neutralized_sys.index:
     model = LinearRegression().fit(X, f)
     fitted = model.predict(X)
     # Use adaptive strength
-    # strength = alpha_t.loc[t] if t in alpha_t.index else alpha_0 
+    # strength = alpha_t.loc[t] if t in alpha_t.index else alpha_0  
+    # neutralized.loc[t, f.index] = f - strength * (f - fitted)
     strength = 1
-    neutralized.loc[t, f.index] = f - strength * (f - fitted)
+    neutralized.loc[t, f.index] = (f - fitted)
 
 # -----------------------------
 # 5. Recompute IC after neutralization
@@ -169,9 +168,90 @@ for factor_name in set([col[0] for col in neutralized.columns]):
             ICs.append(spearmanr(f, r).correlation)
     ICs = pd.Series(ICs, index=factor_df.index[:len(ICs)])
     mean_IC = ICs.mean()
-    IR = mean_IC / ICs.std() if ICs.std() != 0 else np.nan
+    IR = mean_IC / ICs.std()
     results[factor_name] = {'mean_IC': mean_IC, 'IR': IR}
 
 print("Raw Factor Results")
 for name, res in results.items():
     print(f"{name}: Mean IC = {res['mean_IC']:.4f}, IR = {res['IR']:.4f}")
+
+# -----------------------------
+# 6. Gradient Boosting Model
+# -----------------------------
+
+# --- Prepare data for ML model ---
+# Reshape neutralized factors and forward returns
+X_ml = neutralized.stack(level=[0, 1]).unstack(level=1)
+y_ml = fwd_returns.stack()
+
+# Align data
+data_ml = pd.concat([X_ml, y_ml.rename('fwd_return')], axis=1)
+# Replace inf/-inf with NaN, then drop rows with any NaN
+data_ml.replace([np.inf, -np.inf], np.nan, inplace=True)
+data_ml.dropna(inplace=True)
+X = data_ml.drop('fwd_return', axis=1)
+y = data_ml['fwd_return']
+
+# Time-based train-test split (80/20)
+split_index = int(len(X.index.get_level_values('Date').unique()) * 0.8)
+train_dates = X.index.get_level_values('Date').unique()[:split_index]
+test_dates = X.index.get_level_values('Date').unique()[split_index:]
+
+X_train = X.loc[X.index.get_level_values('Date').isin(train_dates)]
+y_train = y.loc[y.index.get_level_values('Date').isin(train_dates)]
+X_test = X.loc[X.index.get_level_values('Date').isin(test_dates)]
+y_test = y.loc[y.index.get_level_values('Date').isin(test_dates)]
+
+# --- Train LightGBM Model ---
+lgb_params = {
+    'objective': 'regression_l1',
+    'metric': 'rmse',
+    'n_estimators': 1000,
+    'learning_rate': 0.01,
+    'feature_fraction': 0.8,
+    'bagging_fraction': 0.8,
+    'bagging_freq': 1,
+    'lambda_l1': 0.1,
+    'lambda_l2': 0.1,
+    'num_leaves': 31,
+    'verbose': -1,
+    'n_jobs': -1,
+    'seed': 42,
+    'boosting_type': 'gbdt',
+}
+
+model = lgb.LGBMRegressor(**lgb_params)
+model.fit(X_train, y_train,
+          eval_set=[(X_test, y_test)],
+          eval_metric='rmse',
+          callbacks=[lgb.early_stopping(100, verbose=False)])
+
+# --- Evaluate Model ---
+predictions = pd.Series(model.predict(X_test), index=X_test.index)
+
+# Calculate daily IC
+ICs_ml = []
+for date in test_dates:
+    if date in predictions.index.get_level_values('Date'):
+        pred_slice = predictions.loc[date]
+        true_slice = y_test.loc[date]
+        
+        # Align slices just in case
+        common_index = pred_slice.index.intersection(true_slice.index)
+        if len(common_index) > 2:
+            corr, _ = spearmanr(pred_slice.loc[common_index], true_slice.loc[common_index])
+            ICs_ml.append(corr)
+
+ICs_ml = pd.Series(ICs_ml, index=test_dates[:len(ICs_ml)])
+mean_IC_ml = ICs_ml.mean()
+IR_ml = mean_IC_ml / ICs_ml.std() if ICs_ml.std() != 0 else np.nan
+
+print("\nGradient Boosting Model Results (on test set):")
+print(f"Mean IC = {mean_IC_ml:.4f}, IR = {IR_ml:.4f}")
+
+# Feature Importance
+lgb.plot_importance(model, max_num_features=10, figsize=(10, 6), title='LGBM Feature Importance')
+plt.tight_layout()
+plt.show()
+
+
