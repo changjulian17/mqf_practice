@@ -10,17 +10,50 @@ from scipy.stats import spearmanr
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 import lightgbm as lgb
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+import json
+import os
+import time
 
 # Example tickers + sector info
 tickers = ["AAPL", "MSFT", "AMZN", "GOOG", "META", "JPM", "GS", "XOM", "CVX", "TSLA"]
+sector_cache_file = 'data/sector_map.json'
 sector_map = {}
-for t in tickers:
-    info = yf.Ticker(t).info
-    sector_map[t] = info.get("sector", "Unknown")
+
+if os.path.exists(sector_cache_file):
+    print("Loading sector map from cache...")
+    with open(sector_cache_file, 'r') as f:
+        sector_map = json.load(f)
+else:
+    print("Fetching sector map from yfinance...")
+    for t in tickers:
+        try:
+            info = yf.Ticker(t).info
+            sector_map[t] = info.get("sector", "Unknown")
+            print(f"Fetched info for {t}")
+            time.sleep(1) # Add a small delay to be respectful to the API
+        except Exception as e:
+            print(f"Could not fetch info for {t}: {e}")
+            sector_map[t] = "Unknown"
+    
+    with open(sector_cache_file, 'w') as f:
+        json.dump(sector_map, f)
+    print("Saved sector map to cache.")
+
 sector_df = pd.Series(sector_map, name="Sector")
 
 # Download data
-data = yf.download(tickers, start="2020-01-01", end="2023-01-01")["Close"]
+daily_data_cache_file = 'data/daily_close_data.csv'
+if os.path.exists(daily_data_cache_file):
+    print("Loading daily close data from cache...")
+    data = pd.read_csv(daily_data_cache_file, index_col='Date', parse_dates=True)
+else:
+    print("Downloading daily close data from yfinance...")
+    data = yf.download(tickers, start="2020-01-01", end="2023-01-01")["Close"]
+    data.to_csv(daily_data_cache_file)
+    print("Saved daily close data to cache.")
 
 # -----------------------------
 # 2. Create factor (20-day momentum)
@@ -192,6 +225,10 @@ data_ml.dropna(inplace=True)
 X = data_ml.drop('fwd_return', axis=1)
 y = data_ml['fwd_return']
 
+# Name the index levels for clarity and for the transformer model
+X.index.names = ['Date', 'Ticker']
+y.index.names = ['Date', 'Ticker']
+
 # Time-based train-test split (80/20)
 split_index = int(len(X.index.get_level_values('Date').unique()) * 0.8)
 train_dates = X.index.get_level_values('Date').unique()[:split_index]
@@ -252,6 +289,128 @@ print(f"Mean IC = {mean_IC_ml:.4f}, IR = {IR_ml:.4f}")
 # Feature Importance
 lgb.plot_importance(model, max_num_features=10, figsize=(10, 6), title='LGBM Feature Importance')
 plt.tight_layout()
-plt.show()
+plt.savefig('data/results/lightGBM_feature_importance.png')
+
+# -----------------------------
+# 7. Transformer Model
+# -----------------------------
+
+# --- Transformer Model Definition ---
+class TransformerModel(nn.Module):
+    def __init__(self, input_dim, model_dim, nhead, num_encoder_layers, num_decoder_layers, dropout=0.1):
+        super(TransformerModel, self).__init__()
+        self.model_dim = model_dim
+        self.pos_encoder = nn.Parameter(torch.zeros(1, 5000, model_dim)) # Positional encoding
+        self.encoder = nn.Linear(input_dim, model_dim)
+        self.transformer = nn.Transformer(d_model=model_dim, nhead=nhead, 
+                                          num_encoder_layers=num_encoder_layers, 
+                                          num_decoder_layers=num_decoder_layers, 
+                                          dropout=dropout, batch_first=True)
+        self.decoder = nn.Linear(model_dim, 1)
+
+    def forward(self, src):
+        src = self.encoder(src) * np.sqrt(self.model_dim)
+        src = src + self.pos_encoder[:, :src.size(1), :]
+        # For inference, we only use the encoder part of the transformer.
+        # The decoder part is not needed for this forecasting task.
+        # We will use the output of the encoder for the final prediction.
+        output = self.transformer.encoder(src)
+        output = self.decoder(output[:, -1, :]) # Use the output of the last time step
+        return output
+
+# --- Prepare data for Transformer ---
+sequence_length = 20 # Lookback window
+
+def create_sequences(X, y, sequence_length):
+    xs, ys, indices = [], [], []
+    # Group by stock ticker to create sequences per stock
+    for ticker in X.index.get_level_values('Ticker').unique():
+        x_ticker = X.loc[pd.IndexSlice[:, ticker], :]
+        y_ticker = y.loc[pd.IndexSlice[:, ticker]]
+        
+        if len(x_ticker) < sequence_length:
+            continue
+            
+        for i in range(len(x_ticker) - sequence_length + 1):
+            xs.append(x_ticker.iloc[i:(i + sequence_length)].values)
+            ys.append(y_ticker.iloc[i + sequence_length - 1])
+            indices.append(x_ticker.index[i + sequence_length - 1])
+            
+    return np.array(xs), np.array(ys), indices
+
+## Bottle neck for large datasets
+# TODO find a way to optimize this
+X_train_seq, y_train_seq, _ = create_sequences(X_train, y_train, sequence_length)
+X_test_seq, y_test_seq, test_indices = create_sequences(X_test, y_test, sequence_length)
+
+# Convert to PyTorch tensors
+X_train_tensor = torch.from_numpy(X_train_seq).float()
+y_train_tensor = torch.from_numpy(y_train_seq).float().view(-1, 1)
+X_test_tensor = torch.from_numpy(X_test_seq).float()
+y_test_tensor = torch.from_numpy(y_test_seq).float().view(-1, 1)
+
+# Create DataLoaders
+train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+
+# --- Train Transformer Model ---
+input_dim = X_train.shape[1]
+model_dim = 32
+nhead = 4
+num_encoder_layers = 2
+num_decoder_layers = 2
+
+transformer_model = TransformerModel(input_dim, model_dim, nhead, num_encoder_layers, num_decoder_layers)
+criterion = nn.MSELoss()
+optimizer = torch.optim.Adam(transformer_model.parameters(), lr=0.001)
+
+epochs = 20
+print("\nStarting Transformer model training...")
+for epoch in range(epochs):
+    transformer_model.train()
+    total_loss = 0
+    for batch_X, batch_y in train_loader:
+        optimizer.zero_grad()
+        output = transformer_model(batch_X)
+        loss = criterion(output, batch_y)
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    
+    avg_loss = total_loss / len(train_loader)
+    print(f"Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.6f}")
+
+# --- Evaluate Transformer Model ---
+transformer_model.eval()
+with torch.no_grad():
+    predictions_tensor = transformer_model(X_test_tensor)
+
+predictions_transformer = pd.Series(predictions_tensor.numpy().flatten(), index=pd.MultiIndex.from_tuples(test_indices, names=['Date', 'Ticker']))
+y_test_transformer = pd.Series(y_test_seq, index=predictions_transformer.index)
+
+# Calculate daily IC for Transformer
+ICs_transformer = []
+test_dates_transformer = predictions_transformer.index.get_level_values('Date').unique()
+
+for date in test_dates_transformer:
+    pred_slice = predictions_transformer.loc[date]
+    true_slice = y_test_transformer.loc[date]
+    
+    common_index = pred_slice.index.intersection(true_slice.index)
+    if len(common_index) > 2:
+        corr, _ = spearmanr(pred_slice.loc[common_index], true_slice.loc[common_index])
+        if not np.isnan(corr):
+            ICs_transformer.append(corr)
+
+if ICs_transformer:
+    ICs_transformer = pd.Series(ICs_transformer)
+    mean_IC_transformer = ICs_transformer.mean()
+    IR_transformer = mean_IC_transformer / ICs_transformer.std() if ICs_transformer.std() != 0 else np.nan
+else:
+    mean_IC_transformer = np.nan
+    IR_transformer = np.nan
+
+print("\nTransformer Model Results (on test set):")
+print(f"Mean IC = {mean_IC_transformer:.4f}, IR = {IR_transformer:.4f}")
 
 

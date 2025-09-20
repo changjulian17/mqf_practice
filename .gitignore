@@ -44,3 +44,5 @@ QF621_Quant_Trading_Strats/order_rebalancing/data/*.zip
 *.zip
 *.xlsx
 QF603_Quant_Analysis_Fin_Markets/.venv/*
+QF603_Quant_Analysis_Fin_Markets/Lesson_3/*.csv
+QF603_Quant_Analysis_Fin_Markets/data/*.csv

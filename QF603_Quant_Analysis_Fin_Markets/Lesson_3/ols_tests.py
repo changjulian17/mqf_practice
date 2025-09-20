@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 
 pd.set_option('use_inf_as_na', True)
 
-meta_df = pd.read_csv("stockmetadata.csv")
-fdata_df = pd.read_csv("corpfund.csv")
+meta_df = pd.read_csv("QF603_Quant_Analysis_Fin_Markets/Lesson_3/stockmetadata.csv")
+fdata_df = pd.read_csv("QF603_Quant_Analysis_Fin_Markets/Lesson_3/corpfund.csv")
 fdata_df = fdata_df[fdata_df['dimension']=='ARQ']
 fdata_df['datekey'] = pd.to_datetime(fdata_df['datekey'])
 df_left = pd.merge(fdata_df, meta_df, on='ticker', how='left')
