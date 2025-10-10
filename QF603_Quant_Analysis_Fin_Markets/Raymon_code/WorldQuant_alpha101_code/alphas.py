@@ -390,15 +390,20 @@ class Alphas(object):
                      rank(self.open - delay(self.close, 1)) *
                      rank(self.open - delay(self.low, 1)))
 
-    # Alpha#21	 ((((sum(close, 8) / 8) + stddev(close, 8)) < (sum(close, 2) / 2)) ? (-1 * 1) : (((sum(close,2) / 2) < ((sum(close, 8) / 8) - stddev(close, 8))) ? 1 : (((1 < (volume / adv20)) || ((volume /adv20) == 1)) ? 1 : (-1 * 1))))
+    # Alpha#21	 ((((sum(close, 8) / 8) + stddev(close, 8)) < (sum(close, 2) / 2)) ? (-1 * 1) : 
+    #                   (((sum(close,2) / 2) < ((sum(close, 8) / 8) - stddev(close, 8))) ? 1 : 
+    #                       (((1 < (volume / adv20)) || ((volume /adv20) == 1)) ? 1 : 
+    #                           (-1 * 1))))
     def alpha021(self):
+        adv20 = sma(self.volume, 20)
         cond_1 = sma(self.close, 8) + stddev(self.close, 8) < sma(self.close, 2)
-        cond_2 = sma(self.volume, 20) / self.volume < 1
-        alpha = pd.DataFrame(np.ones_like(self.close), index=self.close.index
-                             )
-#        alpha = pd.DataFrame(np.ones_like(self.close), index=self.close.index,
-#                             columns=self.close.columns)
-        alpha[cond_1 | cond_2] = -1
+        cond_2 = sma(self.close, 2) < (sma(self.close, 8) - stddev(self.close, 8))
+        cond_3 = (self.volume / adv20) >= 1
+
+        result = np.where(cond_1, -1,
+                          np.where(cond_2, 1,
+                                   np.where(cond_3, 1, -1)))
+        alpha = pd.DataFrame(result, index=self.close.index, columns=self.close.columns)
         return alpha
     
     # Alpha#22	 (-1 * (delta(correlation(high, volume, 5), 5) * rank(stddev(close, 20))))
@@ -624,7 +629,7 @@ class Alphas(object):
 	# Alpha#61	 (rank((vwap - ts_min(vwap, 16.1219))) < rank(correlation(vwap, adv180, 17.9282)))
     def alpha061(self):
         adv180 = sma(self.volume, 180)
-        return (rank((self.vwap - ts_min(self.vwap, 16))) < rank(correlation(self.vwap, adv180, 18)))
+        return (rank((self.vwap - ts_min(self.vwap, 16))) < rank(correlation(self.vwap, adv180, 18))).astype(float).fillna(0.0)
     
 	# Alpha#62	 ((rank(correlation(vwap, sum(adv20, 22.4101), 9.91009)) < rank(((rank(open) +rank(open)) < (rank(((high + low) / 2)) + rank(high))))) * -1)
     def alpha062(self):
@@ -701,7 +706,7 @@ class Alphas(object):
     # Alpha#75	 (rank(correlation(vwap, volume, 4.24304)) < rank(correlation(rank(low), rank(adv50),12.4413)))
     def alpha075(self):
         adv50 = sma(self.volume, 50)
-        return (rank(correlation(self.vwap, self.volume, 4)) < rank(correlation(rank(self.low), rank(adv50),12)))
+        return (rank(correlation(self.vwap, self.volume, 4)) < rank(correlation(rank(self.low), rank(adv50),12))).astype(float).fillna(0.0)
     
     # Alpha#76	 (max(rank(decay_linear(delta(vwap, 1.24383), 11.8259)),Ts_Rank(decay_linear(Ts_Rank(correlation(IndNeutralize(low, IndClass.sector), adv81,8.14941), 19.569), 17.1543), 19.383)) * -1)
      
@@ -813,7 +818,7 @@ class Alphas(object):
     # Alpha#95	 (rank((open - ts_min(open, 12.4105))) < Ts_Rank((rank(correlation(sum(((high + low)/ 2), 19.1351), sum(adv40, 19.1351), 12.8742))^5), 11.7584))
     def alpha095(self):
         adv40 = sma(self.volume, 40)
-        return (rank((self.open - ts_min(self.open, 12))) < ts_rank((rank(correlation(sma(((self.high + self.low)/ 2), 19), sma(adv40, 19), 13)).pow(5)), 12))
+        return (rank((self.open - ts_min(self.open, 12))) < ts_rank((rank(correlation(sma(((self.high + self.low)/ 2), 19), sma(adv40, 19), 13)).pow(5)), 12)).astype(float).fillna(0.0)
     
     # Alpha#96	 (max(Ts_Rank(decay_linear(correlation(rank(vwap), rank(volume), 3.83878),4.16783), 8.38151), Ts_Rank(decay_linear(Ts_ArgMax(correlation(Ts_Rank(close, 7.45404),Ts_Rank(adv60, 4.13242), 3.65459), 12.6556), 14.0365), 13.4143)) * -1)
     def alpha096(self):
