@@ -52,6 +52,16 @@ def covariance(x, y, window=10):
     """
     return x.rolling(window).cov(y)
 
+def indneutralize(x, g):
+    """
+    Cross-sectionally neutralized x against groups g
+    x is cross-sectionally demeaned within each group g
+    """
+    if isinstance(x, pd.DataFrame):
+        return x.subtract(x.groupby(g, axis=1).transform('mean'), axis=0)
+    else:
+        return x - x.groupby(g).transform('mean')
+
 def rolling_rank(na):
     """
     Auxiliary function to be used in pd.rolling_apply
@@ -276,6 +286,7 @@ class Alphas(object):
         self.close = df_data.xs('Close', axis=1, level=0)
         self.volume = df_data.xs('Volume', axis=1, level=0) * 100
         self.returns = df_data.xs('Returns', axis=1, level=0)
+        self.market_cap = df_data.xs('Market_Cap', axis=1, level=0)
         self.vwap = (self.high + self.low + self.close) / 3  # need VWAP data
 
     # Alpha#1	 (rank(Ts_ArgMax(SignedPower(((returns < 0) ? stddev(returns, 20) : close), 2.), 5)) -0.5)
@@ -442,10 +453,9 @@ class Alphas(object):
     ## Some Error, still fixing!!
     def alpha027(self):
         alpha = rank((sma(correlation(rank(self.volume), rank(self.vwap), 6), 2) / 2.0))
-        alpha[alpha > 0.5] = -1
-        alpha[alpha <= 0.5]=1
-        return alpha  
-    
+        alpha = np.where(alpha > 0.5, -1, 1)
+        return alpha
+
     # Alpha#28	 scale(((correlation(adv20, low, 5) + ((high + low) / 2)) - close))
     def alpha028(self):
         adv20 = sma(self.volume, 20)
@@ -564,7 +574,18 @@ class Alphas(object):
         return ((((rank((1 / self.close)) * self.volume) / adv20) * ((self.high * rank((self.high - self.close))) / (sma(self.high, 5) /5))) - rank((self.vwap - delay(self.vwap, 5))))
     
     # Alpha#48	 (indneutralize(((correlation(delta(close, 1), delta(delay(close, 1), 1), 250) *delta(close, 1)) / close), IndClass.subindustry) / sum(((delta(close, 1) / delay(close, 1))^2), 250))
-     
+    # def alpha048(self):
+    #     """
+    #     (indneutralize(((correlation(delta(close, 1), delta(delay(close, 1), 1), 250) *
+    #     delta(close, 1)) / close), IndClass.subindustry) / sum(((delta(close, 1) / delay(close, 1))^2), 250))
+        
+    #     Note: Requires industry classification data
+    #     """
+    #     # Simplified version without industry neutralization
+    #     numerator = correlation(delta(self.close, 1), delta(delay(self.close, 1), 1), 250) * \
+    #                 delta(self.close, 1) / self.close
+    #     denominator = sum((delta(self.close, 1) / delay(self.close, 1)) ** 2, 250)
+    #     return numerator / denominator
     
     # Alpha#49	 (((((delay(close, 20) - delay(close, 10)) / 10) - ((delay(close, 10) - close) / 10)) < (-1 *0.1)) ? 1 : ((-1 * 1) * (close - delay(close, 1))))
     def alpha049(self):
