@@ -14,7 +14,7 @@ def ts_sum(df, window=10):
     :return: a pandas DataFrame with the time-series min over the past 'window' days.
     """
     
-    return df.rolling(window, min_periods=int(window/2)).sum()
+    return df.rolling(window, min_periods=1).sum()
 
 def sma(df, window=10):
     """
@@ -23,7 +23,7 @@ def sma(df, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series min over the past 'window' days.
     """
-    return df.rolling(window, min_periods=int(window/2)).mean()
+    return df.rolling(window, min_periods=1).mean()
 
 def stddev(df, window=10):
     """
@@ -32,7 +32,7 @@ def stddev(df, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series min over the past 'window' days.
     """
-    return df.rolling(window, min_periods=int(window/2)).std()
+    return df.rolling(window, min_periods=1).std()
 
 def correlation(x, y, window=10):
     """
@@ -41,7 +41,7 @@ def correlation(x, y, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series min over the past 'window' days.
     """
-    return x.rolling(window, min_periods=int(window/2)).corr(y)
+    return x.rolling(window, min_periods=1).corr(y)
 
 def covariance(x, y, window=10):
     """
@@ -50,7 +50,7 @@ def covariance(x, y, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series min over the past 'window' days.
     """
-    return x.rolling(window, min_periods=int(window/2)).cov(y)
+    return x.rolling(window, min_periods=1).cov(y)
 
 def indneutralize(x, g):
     """
@@ -77,7 +77,7 @@ def ts_rank(df, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series rank over the past window days.
     """
-    return df.rolling(window, min_periods=int(window/2)).apply(rolling_rank)
+    return df.rolling(window, min_periods=1).apply(rolling_rank)
 
 def rolling_prod(na):
     """
@@ -94,7 +94,7 @@ def product(df, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series product over the past 'window' days.
     """
-    return df.rolling(window, min_periods=int(window/2)).apply(rolling_prod)
+    return df.rolling(window, min_periods=1).apply(rolling_prod)
 
 def ts_min(df, window=10):
     """
@@ -103,7 +103,7 @@ def ts_min(df, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series min over the past 'window' days.
     """
-    return df.rolling(window, min_periods=int(window/2)).min()
+    return df.rolling(window, min_periods=1).min()
 
 def ts_max(df, window=10):
     """
@@ -112,7 +112,7 @@ def ts_max(df, window=10):
     :param window: the rolling window.
     :return: a pandas DataFrame with the time-series max over the past 'window' days.
     """
-    return df.rolling(window, min_periods=int(window/2)).max()
+    return df.rolling(window, min_periods=1).max()
 
 def delta(df, period=1):
     """
@@ -159,7 +159,7 @@ def ts_argmax(df, window=10):
     :param window: the rolling window.
     :return: well.. that :)
     """
-    return df.rolling(window, min_periods=int(window/2)).apply(np.argmax) + 1 
+    return df.rolling(window, min_periods=1).apply(np.argmax) + 1 
 
 def ts_argmin(df, window=10):
     """
@@ -168,7 +168,7 @@ def ts_argmin(df, window=10):
     :param window: the rolling window.
     :return: well.. that :)
     """
-    return df.rolling(window, min_periods=int(window/2)).apply(np.argmin) + 1
+    return df.rolling(window, min_periods=1).apply(np.argmin) + 1
 
 def decay_linear(x, period=10):
     """
