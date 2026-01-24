@@ -1,0 +1,44 @@
+Trade Type: Swap
+PV: -186579.3173
+Swap Notional: 10000000.0000
+Start: 2025-1-3, End: 2027-1-3
+Fixed Rate: 0.0450
+-----------------------------
+Trade Type: Swap
+PV: -1495604.9733
+Swap Notional: 20000000.0000
+Start: 2025-1-3, End: 2029-1-3
+Fixed Rate: 0.0300
+-----------------------------
+Trade Type: Bond
+PV: 337089.0402
+Bond Name: usd-gov
+Maturity: 2035-1-3
+Coupon: 0.0250
+-----------------------------
+Trade Type: EuropeanOption
+PV: 58.2280
+Option Ticker: APPL
+Strike: 625.0000
+Expiry: 2026-1-3
+Black-Scholes PV: 58.2652
+-----------------------------
+Trade Type: EuropeanOption
+PV: 50.7447
+Option Ticker: APPL
+Strike: 700.0000
+Expiry: 2027-1-3
+Black-Scholes PV: 50.6011
+-----------------------------
+Trade Type: AmericanOption
+PV: 58.2280
+Option Ticker: APPL
+Strike: 625.0000
+Expiry: 2026-1-3
+-----------------------------
+Trade Type: AmericanOption
+PV: 60.1587
+Option Ticker: APPL
+Strike: 700.0000
+Expiry: 2027-1-3
+-----------------------------

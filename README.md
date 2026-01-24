@@ -2,6 +2,72 @@
 
 Aspiring Quant!
 
+## Year 1 Sem 3
+
+### QF633 C++
+		- Options pricing with OOP
+### QF621 Quantitative Trading Strategies
+		- High frequency trading
+    
+## Year 1 Sem 2
+
+### QF605 Fixed Income Securities
+
+- No-abitrage forward pricing: bootstrapping collateralised/non-collateralised forward rates
+- Swap/Libor Market Model, convexity correction
+- Pricing risk neutral: swap, swaptions, constant maturity swap
+- Short rate: Vasicek, Ho-Lee, Hull
+- Project ***
+  - Bootstrapping Swap Curves: Discount Curve, IRS pricing, forward swaps
+  - Swaption Calibration: SABR
+  - Convexity Correction: CMS
+  - Exotic CMS Payoff
+### QF609 Risk Analysis
+		- Value-at Risk: Stocks, Options
+		- Parametric VaR - with correlaed assets
+		- Monte Carlo VaR
+		- Historical VaR
+### QF602 Derivatives
+		- Spread option pricing
+		- Derive Barrier Option - Up and In Put
+		- Greeks - graphs
+		- Exotic products: TARF, CLN, FCN
+		- Jump-Diffusion
+		- Carr-Madan - static replication
+
+
+## Year 1 Special Term
+
+### QF634 Applied Quantitative Research Methods
+
+- Linear Regression
+
+#### Homework 2
+
+Classification
+
+- Logistic Regression
+- AUC ROC
+
+#### Homework 3
+
+Ensemble Methods
+
+- Random Forest
+
+#### Homework 4
+
+Neural Networks
+
+- Keras
+
+#### Project ***
+- universe: TOPIX
+- pair trading and clustering
+- neural networks in optimising entry and exit
+  - Applying Markov chain -- Q table and 3 layer Neural Networks
+
+
 ## Year 1 Term 1
 
 ### QF620 Stochastic Modelling
@@ -95,30 +161,3 @@ Using OLS to obtain market and idiosyncratic risks per Market Model. Also measur
 - Monte Carlo simulations of portfolios to plot efficient frontier
 
 Instead of only using Risk-free rate as in Homework 1, used Market Portfolio to compare relative performance and volatility of portfolios. In the second part, obtained an estimate for the minimum variance portfolio by computing returns and variance for random portfolios using Monte Carlo method. Showing that we can obtain a wider range of portfolios by taking the reciprocal of the random weights.
-
-## Year 1 Special Term
-
-### QF634 Applied Quantitative Research Methods
-
-#### Homework 1
-
-Linear Regression
-
-#### Homework 2
-
-Classification
-
-- Logistic Regression
-- AUC ROC
-
-#### Homework 3
-
-Ensemble Methods
-
-- Random Forest
-
-#### Homework 4
-
-Neural Networks
-
-- Keras
