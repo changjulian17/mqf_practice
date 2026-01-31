@@ -88,7 +88,7 @@ def crrBinomial(S, r, vol, payoffType, K, T, n):
     payoffDict = {
         PayoffType.Call: lambda s: max(s-K, 0),
         PayoffType.Put: lambda s: max(K-s, 0),
-    }
+    }       # set up endstate vs
     vs = [payoffDict[payoffType]( S * u**(n-i-i)) for i in range(n+1)]
     # iterate backward
     for i in range(n-1, -1, -1):
