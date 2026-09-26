@@ -31,6 +31,15 @@ step, append one line to LOG.md.
 - No new abstraction (base classes, config systems, plugins) unless I ask.
 - Prefer a dumb working version now; note "could improve" in LOG.md, move on.
 
+## Tradeoffs & gaps (keep in README)
+README has a `## Tradeoffs & gaps` section, updated in the same change as
+the code that causes it. Never leave it for the end.
+- Tradeoff: `<choice made> - <why> - <cost> - <better option given more time>`.
+- Gap: `<what is missing or not handled> - <impact> - <how to close it>`.
+- Include: shortcuts, stubs still in place, assumptions not yet confirmed
+  (link to OPEN QUESTIONS), inputs not handled, perf/scale limits.
+- "could improve" notes in LOG.md feed into this section.
+
 ## Rules
 - README contains all important info for anyone to understand the application,
   with a mermaid diagram of the workflow.
