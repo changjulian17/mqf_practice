@@ -46,10 +46,26 @@ step, append one line to LOG.md.
 ## Logging
 - Configure once in `src/logging_setup.py`; every module uses
   `logger = logging.getLogger(__name__)`.
-- INFO  = each stage start/end + row counts in/out.
-- WARNING = row repaired or skipped, with the key and the reason.
-- ERROR = aborts, with input path and row number.
-- Write to `logs/run.log` AND stderr. Never log secrets or full file dumps.
+- Goal: from the log alone, reconstruct what happened to every piece of data.
+  Log ALL data changes, whatever the data (rows, records, objects, files,
+  state, API responses). Terms below are generic - adapt to the task.
+- "ID" = whatever identifies the item in this task (key, index, id, path,
+  line number, composite of fields). Pick it once, note it in FACTS, use it
+  consistently in every log line.
+- DEBUG = every data change, one line each, greppable prefix:
+  - `ADD    <id> <value or summary> reason=<why>`
+  - `UPDATE <id> <what changed> old=<before> new=<after> reason=<why>`
+  - `REMOVE <id> <value or summary> reason=<why>`
+  "What changed" = field, attribute, element, or whole item - whatever fits.
+  Large values: log a short summary (type, length, first N chars), not a dump.
+- DEBUG = function entry/exit: name + arg shapes (types, lengths, counts),
+  never full data. Use one small decorator, not hand-written lines.
+- INFO  = each stage start (`START <stage> in=<count>`) and end
+  (`END <stage> out=<count> added=<n> updated=<n> removed=<n>`).
+- WARNING = item repaired or skipped, with the ID and the reason.
+- ERROR = aborts, with input path and ID/position.
+- `logs/run.log` always captures DEBUG. stderr shows INFO and up.
+- Never log secrets or full file dumps.
 
 ## Commands
 - Test: `pytest -q`
