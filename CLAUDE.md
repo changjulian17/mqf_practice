@@ -52,6 +52,49 @@ the code that causes it. Never leave it for the end.
 - State assumptions explicitly in your reply, do not bury them in code.
 - Allow for user review of the diff before committing code.
 
+## Verification
+- Before building, ask the interviewer for one oracle row: a known input +
+  expected output to verify the core formula or transform independently.
+  Never verify your own logic against your own formula — use an external source
+  (textbook, online calculator, or interviewer-supplied value).
+- After building, hand-verify at least 3 cases:
+  - One standard happy path.
+  - One inverted or negated case (short, reversed, negative qty).
+  - One boundary case (near-zero, near-limit, missing optional field).
+- Record each verification in LOG.md with: input values, expected output,
+  actual output, and source of truth.
+
+## Assumptions — make visible in outputs
+- Every assumption must appear in two places: FACTS.md and the output itself
+  (column, footnote, anomaly row, or printed summary line).
+- If an assumption materially affects any output value, log it at WARNING level
+  so it cannot be missed in the log.
+- Example pattern: "flat X assumed — using single value for all Y and Z".
+
+## External data validation
+- Validate and type each data source on load, in its own function, before
+  joining to any other source.
+- Each source gets its own anomaly channel: use a `source` field in
+  anomalies.csv (e.g. source="positions", source="market").
+- Unused rows from a secondary source (e.g. lookup rows with no matching
+  primary row) are logged at INFO, not flagged as anomalies.
+
+## CLI hardening
+- Every model parameter or constant that a user might need to change
+  (rate, multiplier, date, threshold) must be a CLI flag with a sensible
+  default. Never hardcode a number that lives outside the code.
+- Pattern: `--param VALUE  # default: X (FACTS Qn)` in argparse help text.
+- If a parameter changes the output materially, include it in the printed
+  summary line so the run is self-documenting.
+
+## Test coverage requirements
+- Every happy-path case in FACTS has a test.
+- Every skip/flag anomaly case in FACTS has a test that checks the anomaly
+  row fields (row_id, field, reason), not just that it didn't crash.
+- At least one inverted/negated case (short, reversed, negative).
+- At least one boundary case per numeric input (zero, near-zero, very large).
+- Tests must not read from `data/` — use inline fixtures or tmp_path.
+
 ## Logging
 - Configure once in `src/logging_setup.py`; every module uses
   `logger = logging.getLogger(__name__)`.
@@ -72,11 +115,17 @@ the code that causes it. Never leave it for the end.
 - INFO  = each stage start (`START <stage> in=<count>`) and end
   (`END <stage> out=<count> added=<n> updated=<n> removed=<n>`).
 - WARNING = item repaired or skipped, with the ID and the reason.
+  Also: any assumption that materially affects an output value.
 - ERROR = aborts, with input path and ID/position.
-- `logs/run.log` always captures DEBUG. stderr shows INFO and up.
+- `logs/run.log` always captures DEBUG (appends each run). stderr also shows
+  DEBUG. The user wants as much detail as possible
+  (`setup_logging(console_level=...)` changes it).
 - Never log secrets or full file dumps.
 
 ## Commands
+- Setup: `python3.11 -m venv .venv && .venv/bin/pip install -r requirements.txt`
+- Run: `python -m src.<name> [--input PATH] [--out DIR]`
+- Single test: `pytest -q tests/test_<module>.py::test_<case>`
 - Test: `pytest -q`
 
 ## FACTS (clarified with interviewer - authoritative, fill as you learn)
@@ -86,7 +135,4 @@ boring stuff: exact headers, delimiters, join keys, dedup keys, tolerances,
 date formats, what missing/blank means, output columns and sort order.
 Test: could a stranger rebuild the tool from this section alone? If no, add more.
 
-- (fill me from the clarify chat)
-
-## OPEN QUESTIONS
-- [ ] (anything you assumed and want to confirm)
+@FACTS.md
