@@ -46,7 +46,7 @@ the code that causes it. Never leave it for the end.
 - Tradeoff: `<choice made> - <why> - <cost> - <better option given more time>`.
 - Gap: `<what is missing or not handled> - <impact> - <how to close it>`.
 - Include: shortcuts, stubs still in place, assumptions not yet confirmed
-  (link to OPEN QUESTIONS), inputs not handled, perf/scale limits.
+  (link to FACTS.md `## Open questions`), inputs not handled, perf/scale limits.
 - "could improve" notes in LOG.md feed into this section.
 
 ## Rules
@@ -68,14 +68,14 @@ the code that causes it. Never leave it for the end.
   (textbook, online calculator, or interviewer-supplied value).
 - After building, hand-verify at least 3 cases:
   - One standard happy path.
-  - One inverted or negated case (short, reversed, negative qty).
+  - One inverted or negated case (reversed, negative, opposite sign).
   - One boundary case (near-zero, near-limit, missing optional field).
 - Record each verification in LOG.md with: input values, expected output,
   actual output, and source of truth.
 
 ## Assumptions — make visible in outputs
 - Every assumption must appear in two places: FACTS.md and the output itself
-  (column, footnote, anomaly row, or printed summary line).
+  (column, footnote, flagged-item record, or printed summary line).
 - If an assumption materially affects any output value, log it at WARNING level
   so it cannot be missed in the log.
 - Example pattern: "flat X assumed — using single value for all Y and Z".
@@ -83,10 +83,10 @@ the code that causes it. Never leave it for the end.
 ## External data validation
 - Validate and type each data source on load, in its own function, before
   joining to any other source.
-- Each source gets its own anomaly channel: use a `source` field in
-  anomalies.csv (e.g. source="positions", source="market").
-- Unused rows from a secondary source (e.g. lookup rows with no matching
-  primary row) are logged at INFO, not flagged as anomalies.
+- Every skipped/flagged item records which source it came from, so issues
+  can be traced per source.
+- Unused items from a secondary source (e.g. lookup entries with no match in
+  the primary source) are logged at INFO, not flagged.
 
 ## CLI hardening
 - Every model parameter or constant that a user might need to change
@@ -98,11 +98,11 @@ the code that causes it. Never leave it for the end.
 
 ## Test coverage requirements
 - Every happy-path case in FACTS has a test.
-- Every skip/flag anomaly case in FACTS has a test that checks the anomaly
-  row fields (row_id, field, reason), not just that it didn't crash.
-- At least one inverted/negated case (short, reversed, negative).
+- Every skip/flag case in FACTS has a test that checks what was flagged
+  (ID, what was wrong, reason), not just that it didn't crash.
+- At least one inverted/negated case (reversed, negative, opposite sign).
 - At least one boundary case per numeric input (zero, near-zero, very large).
-- Tests must not read from `data/` — use inline fixtures or tmp_path.
+- Tests must not read real input files — use inline fixtures or tmp_path.
 
 ## Logging
 - Configure once in `src/logging_setup.py`; every module uses
