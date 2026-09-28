@@ -18,10 +18,19 @@ Apply per FEATURE, not up front. One feature = one function, <40 lines, one test
 2. REVIEW   - cite the requirement in FACTS/README that justifies it.
               Cannot trace = do not build it. If the plan is longer than
               the code, the step is too big - split it.
-3. REPLAN   - drop untraceable steps, split anything >1 file or >40 lines.
+3. REPLAN   - drop untraceable steps, split anything >1 file or >40 lines
+              (the module file + its call site in main count as one step).
 4. IMPLEMENT- one step. Test first. Run pytest. Thicken one stub at a time.
-5. VALIDATE - re-read diff vs plan: does it do what was planned, nothing
-              more, and keep main runnable? If no -> back to step 1.
+5. INTEGRATE- wire THIS change into main (the runner / orchestrating .py)
+              now, not after the module is finished. Replace the stub call
+              with the real one. Run main end to end on the real input.
+6. VALIDATE - re-read diff vs plan: does it do what was planned, nothing
+              more, and main still runs? If no -> back to step 1.
+7. COMMIT?  - show me the main run output (summary line / counts / first
+              lines of output), then ask me to commit. Never ask to commit
+              a change main does not call yet.
+Never batch: no building several functions or a whole module before
+integrating. One change -> in main -> run -> commit prompt -> next change.
 Ask me before IMPLEMENT on anything touching >1 stage. After each green
 step, append one line to LOG.md.
 
@@ -47,7 +56,7 @@ the code that causes it. Never leave it for the end.
 - No silent except. Fail loud with the offending row/value in the message.
 - Use the stdlib `logging` module, never bare print (except in the skeleton stub).
 - No new dependency without asking me first.
-- Small diffs: one behaviour per change. Do one module and test before commit.
+- Small diffs: one behaviour per change, wired into main and run before commit.
 - If a requirement is missing from FACTS, stop and ask. Do not invent it.
 - State assumptions explicitly in your reply, do not bury them in code.
 - Allow for user review of the diff before committing code.
