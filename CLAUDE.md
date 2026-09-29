@@ -1,8 +1,36 @@
 # Project
 Interview build. Time budget 3 hr. Working MVP beats complete design.
 
-## FIRST GOAL: walking skeleton (do THIS before the working loop)
-Before any planning, tracing, or edge cases, get ONE runnable path:
+## Flow & project files
+Order is fixed. Do not skip ahead.
+1. SETUP   - run Commands > Setup. Then wait for the task.
+2. FACTS   - task given -> write what is known into FACTS.md and list every
+             ambiguity under `## Open questions`. Ask me/interviewer.
+             No code, no PLAN.md until the open questions are answered or
+             explicitly parked as assumptions.
+3. PLAN    - once clarified, write PLAN.md: ordered checklist of small steps,
+             each citing a FACTS Qn. Step 1 is always the walking skeleton.
+             Update PLAN.md whenever the plan changes; tick a step only when
+             it is integrated in main and committed.
+4. BUILD   - walking skeleton, then the working loop, one PLAN.md step at a time.
+
+Files:
+- `FACTS.md`  - what was clarified (authoritative) + open questions.
+- `PLAN.md`   - what we will do next, in order.
+- `LOG.md`    - build diary: every change goes through here (not the runtime
+                log - that is `logs/run.log`). Append only, one line each:
+                `HH:MM <TYPE> <text>`
+                TYPE = SETUP | FACT | PLAN | STEP | VERIFY | IMPROVE | DECISION
+                - FACT: fact added/changed in FACTS.md (cite Qn).
+                - PLAN: PLAN.md changed and why.
+                - STEP: step done - what changed, files, main run result.
+                - VERIFY: input, expected, actual, source of truth.
+                - IMPROVE: "could improve" note (feeds README Tradeoffs & gaps).
+                - DECISION: choice made between options, and why.
+- `README.md` - reader-facing doc (see Rules, Tradeoffs & gaps).
+
+## FIRST GOAL: walking skeleton (PLAN.md step 1)
+Before any tracing or edge cases, get ONE runnable path:
 - A `main()` / `python -m src.<name>` that runs end to end on the real input.
 - Every stage STUBBED: load returns 2-3 hardcoded rows, transform is
   identity, output just prints. It must EXECUTE and produce something.
@@ -32,7 +60,7 @@ Apply per FEATURE, not up front. One feature = one function, <40 lines, one test
 Never batch: no building several functions or a whole module before
 integrating. One change -> in main -> run -> commit prompt -> next change.
 Ask me before IMPLEMENT on anything touching >1 stage. After each green
-step, append one line to LOG.md.
+step, append a `STEP` line to LOG.md and tick it in PLAN.md.
 
 ## Scope ceilings (hard)
 - No stage built beyond a stub until the skeleton runs end-to-end.
@@ -137,7 +165,7 @@ the code that causes it. Never leave it for the end.
   2. `mkdir -p src data logs out tests && touch src/__init__.py`
      - `src/` code, `data/` input files, `logs/` run.log, `out/` outputs,
        `tests/` pytest.
-  3. `touch FACTS.md LOG.md README.md` (creates blank files; never
+  3. `touch FACTS.md PLAN.md LOG.md README.md` (creates blank files; never
      overwrites existing ones)
   4. `printf '.venv/\nlogs/\nout/\n__pycache__/\n.pytest_cache/\n' >> .gitignore`
   5. `python3.11 -m venv .venv && source .venv/bin/activate`
