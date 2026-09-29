@@ -132,7 +132,16 @@ the code that causes it. Never leave it for the end.
 - Never log secrets or full file dumps.
 
 ## Commands
-- Setup: `python3.11 -m venv .venv && .venv/bin/pip install -r requirements.txt`
+- Setup (run once, in order, before the walking skeleton):
+  1. `git init` (skip if already a repo)
+  2. `mkdir -p src data logs out tests && touch src/__init__.py`
+     - `src/` code, `data/` input files, `logs/` run.log, `out/` outputs,
+       `tests/` pytest.
+  3. `printf '.venv/\nlogs/\nout/\n__pycache__/\n.pytest_cache/\n' >> .gitignore`
+  4. `python3.11 -m venv .venv && source .venv/bin/activate`
+  5. `[ -f requirements.txt ] || echo pytest > requirements.txt; pip install -r requirements.txt`
+     (add to requirements.txt only after I approve a dependency)
+  6. `git add -A && git commit -m "project setup"`
 - Run: `python -m src.<name> [--input PATH] [--out DIR]`
 - Single test: `pytest -q tests/test_<module>.py::test_<case>`
 - Test: `pytest -q`
