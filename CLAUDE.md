@@ -168,13 +168,18 @@ the code that causes it. Never leave it for the end.
   3. `touch FACTS.md PLAN.md LOG.md README.md` (creates blank files; never
      overwrites existing ones)
   4. `printf '.venv/\nlogs/\nout/\n__pycache__/\n.pytest_cache/\n' >> .gitignore`
-  5. `python3.11 -m venv .venv && source .venv/bin/activate`
-  6. `[ -f requirements.txt ] || echo pytest > requirements.txt; pip install -r requirements.txt`
+  5. `python3.11 -m venv .venv || python3 -m venv .venv`
+     then check `ls .venv/bin/python` - if missing, STOP and tell me the error
+     (e.g. python3.11 not installed, python3-venv package missing).
+     `source` does not persist between Claude's shell calls, so never rely on
+     an activated venv: always call `.venv/bin/python` / `.venv/bin/pip`.
+  6. `[ -f requirements.txt ] || echo pytest > requirements.txt; \
+     .venv/bin/pip install -r requirements.txt`
      (add to requirements.txt only after I approve a dependency)
   7. `git add -A && git commit -m "project setup"`
-- Run: `python -m src.<name> [--input PATH] [--out DIR]`
-- Single test: `pytest -q tests/test_<module>.py::test_<case>`
-- Test: `pytest -q`
+- Run: `.venv/bin/python -m src.<name> [--input PATH] [--out DIR]`
+- Single test: `.venv/bin/python -m pytest -q tests/test_<module>.py::test_<case>`
+- Test: `.venv/bin/python -m pytest -q`
 
 ## FACTS (clarified with interviewer - authoritative, fill as you learn)
 Put in far more detail than feels necessary. Every ambiguity you leave out,
